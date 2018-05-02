@@ -131,7 +131,7 @@ def run_training():
                              FLAGS.hidden2)
 
     # Add to the Graph the Ops for loss calculation.
-    loss = mnist.loss(logits, labels_placeholder)
+    loss = tf.losses.softmax_cross_entropy(tf.one_hot(labels_placeholder, 10), logits)
 
     # Add to the Graph the Ops that calculate and apply gradients.
     train_op = mnist.training(loss, FLAGS.learning_rate)
@@ -216,7 +216,6 @@ def run_training():
         builder = tf.saved_model.builder.SavedModelBuilder(FLAGS.save_dir)
         builder.add_meta_graph_and_variables(sess, [tf.saved_model.tag_constants.TRAINING])
         builder.save()
-        # [print(n.name) for n in tf.get_default_graph().as_graph_def().node]
 
 
 def main(_):
@@ -273,7 +272,7 @@ if __name__ == '__main__':
   parser.add_argument(
       '--save_dir',
       type=str,
-      default='/tmp/tensorflow/mnist/saved_model',
+      default='/home/albert/EduConv-Backend/MNIST-data/saved_model/',
       help='Directory to put the log data.'
   )
   parser.add_argument(
