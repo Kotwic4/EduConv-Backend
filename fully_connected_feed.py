@@ -21,6 +21,7 @@ from __future__ import print_function
 # pylint: disable=missing-docstring
 import argparse
 import os.path
+import shutil
 import sys
 import time
 
@@ -50,9 +51,12 @@ def placeholder_inputs(batch_size):
   # Note that the shapes of the placeholders match the shapes of the full
   # image and label tensors, except the first dimension is now batch_size
   # rather than the full size of the train or test data sets.
-  images_placeholder = tf.placeholder(tf.float32, shape=(batch_size,
-                                                         mnist.IMAGE_PIXELS))
-  labels_placeholder = tf.placeholder(tf.int32, shape=(batch_size))
+  images_placeholder = tf.placeholder(tf.float32, shape=[batch_size,
+                                                         mnist.IMAGE_PIXELS],name="images_pl")
+  labels_placeholder = tf.placeholder(tf.int32, shape=[batch_size],name="labels_pl")
+  print("images_placeholder",images_placeholder)
+  print("labels_placeholder",labels_placeholder)
+
   return images_placeholder, labels_placeholder
 
 
@@ -75,8 +79,8 @@ def fill_feed_dict(data_set, images_pl, labels_pl):
   """
   # Create the feed_dict for the placeholders filled with the next
   # `batch size` examples.
-  images_feed, labels_feed = data_set.next_batch(FLAGS.batch_size,
-                                                 FLAGS.fake_data)
+  images_feed, labels_feed = data_set.next_batch(100,
+                                                 False)
   feed_dict = {
       images_pl: images_feed,
       labels_pl: labels_feed,
@@ -131,7 +135,7 @@ def run_training():
                              FLAGS.hidden2)
 
     # Add to the Graph the Ops for loss calculation.
-    loss = mnist.loss(logits, labels_placeholder)
+    loss = tf.losses.softmax_cross_entropy(tf.one_hot(labels_placeholder, 10), logits)
 
     # Add to the Graph the Ops that calculate and apply gradients.
     train_op = mnist.training(loss, FLAGS.learning_rate)
@@ -213,10 +217,11 @@ def run_training():
                 images_placeholder,
                 labels_placeholder,
                 data_sets.test)
+        if os.path.isdir(FLAGS.save_dir):
+            shutil.rmtree(FLAGS.save_dir)
         builder = tf.saved_model.builder.SavedModelBuilder(FLAGS.save_dir)
         builder.add_meta_graph_and_variables(sess, [tf.saved_model.tag_constants.TRAINING])
         builder.save()
-        # [print(n.name) for n in tf.get_default_graph().as_graph_def().node]
 
 
 def main(_):
@@ -261,19 +266,19 @@ if __name__ == '__main__':
   parser.add_argument(
       '--input_data_dir',
       type=str,
-      default='/tmp/tensorflow/mnist/input_data',
+      default='/home/albert/inz/EduConv-Backend/mnist/input_data',
       help='Directory to put the input data.'
   )
   parser.add_argument(
       '--log_dir',
       type=str,
-      default='/tmp/tensorflow/mnist/logs/fully_connected_feed',
+      default='/home/albert/inz/EduConv-Backend/mnist/logs/fully_connected_feed',
       help='Directory to put the log data.'
   )
   parser.add_argument(
       '--save_dir',
       type=str,
-      default='/tmp/tensorflow/mnist/saved_model',
+      default='/home/albert/inz/EduConv-Backend/saved_model/',
       help='Directory to put the log data.'
   )
   parser.add_argument(
