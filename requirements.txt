@@ -2,3 +2,5 @@ keras
 tensorflow
 PILLOW
 flask
+flask_cors
+tensorflowjs
