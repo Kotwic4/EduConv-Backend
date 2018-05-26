@@ -1,5 +1,5 @@
 # EduConv-Backend
-##Running app
+## Running app
 ```  
 pip install -m requirements.txt
 export FLASK_APP=./main.py

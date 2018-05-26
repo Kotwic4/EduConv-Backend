@@ -1,5 +1,5 @@
-#API
-  ##model
+# API
+  ## model
     /model
   method: POST
   
@@ -26,7 +26,7 @@
   
   returns: file with given filename from model files
   
-  ##datasets
+  ## datasets
   
     /data/<dataset>/<image_id>
   
