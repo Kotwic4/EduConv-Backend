@@ -5,7 +5,7 @@ from tempfile import NamedTemporaryFile
 from flask import Flask, send_file, send_from_directory, request
 import tensorflow as tf
 from flask_cors import CORS, cross_origin
-from image_util import generate_8bit_bitmap
+from image_util import generate_8bit_gray_bitmap
 from keras_model_creator import KerasModelBuilder
 
 app = Flask(__name__)
@@ -64,7 +64,7 @@ def get_image_json(dataset, image_id):
 def get_bitmap(dataset,image_id):
     if dataset=='mnist':
         mnist = tf.contrib.learn.datasets.load_dataset("mnist")
-        image = generate_8bit_bitmap(28,28,mnist.test.images[image_id])
+        image = generate_8bit_gray_bitmap(28, 28, mnist.test.images[image_id])
         fileObj = NamedTemporaryFile(dir='./',suffix='bmp')
         image.save(fileObj,'bmp')
         return send_from_directory(os.path.dirname(fileObj.name),ntpath.basename(fileObj.name),mimetype="image/bmp")
