@@ -60,6 +60,12 @@ def hello_world(filename):
     return send_from_directory('./saved_model', filename)
 
 
+@cross_origin()
+@app.route('/data')
+def get_datasets():
+    return json.dumps(list(datasets_map.keys()))
+
+
 @app.route('/data/<dataset>/<int:image_id>')
 def get_image_json(dataset, image_id):
     if dataset == 'mnist':
@@ -68,6 +74,7 @@ def get_image_json(dataset, image_id):
         image_str = '[' + ",".join(str(elem) for elem in mnist.test.images[image_id]) + ']'
         return str({"image": image_str, "label": label})
     return "There is no such dataset in the database"
+
 
 @app.route('/data/<dataset>/bitmaps/<int:image_no>')
 def get_bitmap(dataset, image_no):

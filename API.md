@@ -7,7 +7,15 @@
   
   json format: 
 ```
-{"dataset":"dataset_name","layers":[{"layer_name":layername,"args":{arg_name:arg_balue,...},...]}
+{
+    "dataset":"dataset_name",
+    "layers":[
+                {
+                    "layer_name":layername,"args":{arg_name:arg_value,...
+                },
+                ...
+             ]
+}
 ```
  returns: model_id
 
@@ -28,6 +36,12 @@
   returns: file with given filename from model files
   
   ## datasets
+  
+    /data
+    
+  method: GET
+  
+  returns: list of supported datasets (e.g. \["mnist","cifar-10"]) 
   
     /data/<dataset>/<image_id>
   
