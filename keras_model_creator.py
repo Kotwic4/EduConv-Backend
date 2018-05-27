@@ -1,5 +1,6 @@
 from __future__ import print_function
 import keras
+from keras.layers import *
 import sys
 from keras.models import Sequential
 import tensorflowjs as tfjs

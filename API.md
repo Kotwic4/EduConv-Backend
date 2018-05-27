@@ -6,8 +6,9 @@
   data: keras layers in json
   
   json format: 
-{"layers":[{"layer_name":layername,"args":{arg_name:arg_balue,...},...]}
-
+```
+{"dataset":"dataset_name","layers":[{"layer_name":layername,"args":{arg_name:arg_balue,...},...]}
+```
  returns: model_id
 
     /model/<model_id>/<train>

@@ -1,6 +1,7 @@
 import keras
+from PIL import Image
 from keras.datasets import mnist
-
+import keras.backend as K
 
 class MnistInput:
     def __init__(self):
@@ -30,3 +31,12 @@ class MnistInput:
         # convert class vectors to binary class matrices
         self.y_train = keras.utils.to_categorical(self.y_train, self.num_classes)
         self.y_test = keras.utils.to_categorical(self.y_test, self.num_classes)
+
+    @staticmethod
+    def get_bitmap(image_no,from_train_dataset=False):
+        (x_train, y_train), (x_test, y_test) = mnist.load_data()
+        if from_train_dataset:
+            image_array = x_train.reshape(x_train.shape[0], 28, 28)[image_no].astype('uint8')
+        else:
+            image_array = x_test.reshape(x_test.shape[0], 28, 28)[image_no].astype('uint8')
+        return Image.fromarray(image_array,'L')
