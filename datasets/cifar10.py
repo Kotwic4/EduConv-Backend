@@ -27,11 +27,9 @@ class Cifar10Input:
         self.x_test = test_data.reshape(test_data.shape[0], 3, self.img_rows, self.img_cols)
         if K.image_data_format() == 'channels_first':
             self.input_shape = (3, self.img_rows, self.img_cols)
-            print('channels first')
         else:
             self.x_train = numpy.swapaxes(numpy.swapaxes(self.x_train,1,2),2,3)
             self.x_test = numpy.swapaxes(numpy.swapaxes(self.x_test,1,2),2,3)
-            print('channels last',self.x_train.shape)
             self.input_shape = (self.img_rows, self.img_cols, 3)
         self.x_train = self.x_train.astype('float32')
         self.x_test = self.x_test.astype('float32')

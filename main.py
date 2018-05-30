@@ -1,6 +1,8 @@
 import json
 import os
-from flask import Flask, send_file, send_from_directory, request, jsonify
+import sqlite3
+
+from flask import Flask, send_file, send_from_directory, request, jsonify, g
 import tensorflow as tf
 from flask_cors import CORS, cross_origin
 from io import BytesIO
@@ -15,43 +17,53 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 model_no = 100
 
 
+def get_db():
+    if not hasattr(g, 'sqlite_db'):
+        g.sqlite_db = sqlite3.connect("db.sqlite")
+    return g.sqlite_db
+
 @cross_origin()
 @app.route('/model', methods=['POST'])
 def put_model():
-    global model_no
-    model_no += 1
     data = request.get_json()
-    # builder = KerasModelBuilder()
-    # for layer in data['layers']:
-    #     builder.add_layer(layer)
-    os.makedirs(str.format("./{}", model_no), exist_ok=True)
-    print(os.path.dirname("."))
-    with open(str.format('./{}/input.json', model_no), 'w+')as f:
+    db = get_db()
+    cursor = db.cursor()
+    dataset_id = cursor.execute("select id from datasets where name=?",(data["dataset"],)).fetchall()[0][0]
+    cursor.execute("INSERT INTO models(dataset_id) values (?)",(dataset_id,))
+    model_id = cursor.lastrowid
+    dir_path = str.format("models/{}", model_id)
+    cursor.execute("UPDATE models set dir_path=? where id=?",(dir_path,model_id))
+    db.commit()
+    os.makedirs(dir_path, exist_ok=True)
+    with open(str.format('{}/input.json',dir_path), 'w+')as f:
         json.dump(data, f)
-    return str(model_no)
+    return str(model_id)
 
 
 @cross_origin()
 @app.route('/model/<model_no>/train', methods=['POST'])
 def train_model(model_no):
-    with open(str.format('./{}/input.json', model_no), 'r+')as f:
+    request_data = request.get_json()
+    dir_path = get_db().cursor().execute("select dir_path from models where id=?",(model_no,)).fetchall()[0][0]
+    with open(str.format('{}/input.json', dir_path), 'r+')as f:
         data = json.load(f)
     if "dataset" not in data.keys():
         raise InvalidUsage("no dataset specified in request")
     get_dataset_class(data['dataset'])
     dataset_class = datasets_map[data["dataset"]]
-    builder = KerasModelBuilder(dataset=dataset_class())
+    builder = KerasModelBuilder(dataset=dataset_class(), **request_data)
     for layer in data['layers']:
         builder.add_layer(layer)
-    builder.build("./" + model_no)
+    builder.build(dir_path)
 
-    return "lorem ipsum"
+    return "{}"
 
 
 @cross_origin()
 @app.route('/model/<model_no>/<filename>', methods=['GET'])
 def get_model(model_no, filename):
-    return send_from_directory('./' + model_no, filename)
+    dir_path = get_db().cursor().execute("select dir_path from models where id=?", (model_no,)).fetchall()[0][0]
+    return send_from_directory(dir_path, filename)
 
 
 @cross_origin()
@@ -91,3 +103,9 @@ def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
+
+@app.teardown_appcontext
+def close_db(error):
+    """Closes the database again at the end of the request."""
+    if hasattr(g, 'sqlite_db'):
+        g.sqlite_db.close()
