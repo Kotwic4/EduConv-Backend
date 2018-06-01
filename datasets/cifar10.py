@@ -90,7 +90,3 @@ class Cifar10Input:
             path = "datasets/Cifar-10/cifar-10-batches-py/"
         meta_data = unpickle(path+"batches.meta")
         return [label.decode() for label in meta_data[b'label_names']]
-
-db = sqlite3.connect("../db.sqlite")
-Cifar10Input.acquire(db)
-db.close()
