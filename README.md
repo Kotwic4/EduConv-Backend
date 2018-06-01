@@ -1,5 +1,14 @@
 # EduConv-Backend
-## Running app
+
+
+### Init database
+You will need to get sqlite3 first
+```
+sqlite3 db.sqlite < db_init.sql
+```
+
+### Running app
+
 ```  
 pip install -m requirements.txt
 export FLASK_APP=./main.py

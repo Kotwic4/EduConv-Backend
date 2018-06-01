@@ -8,6 +8,7 @@ from flask_cors import CORS, cross_origin
 from io import BytesIO
 
 from datasets_map import datasets_map, get_dataset_class
+from db_helper import get_dataset, get_model
 from exceptions import InvalidUsage
 from keras_model_creator import KerasModelBuilder
 
@@ -51,17 +52,24 @@ def train_model(model_no):
         raise InvalidUsage("no dataset specified in request")
     get_dataset_class(data['dataset'])
     dataset_class = datasets_map[data["dataset"]]
-    builder = KerasModelBuilder(dataset=dataset_class(), **request_data)
+    builder = KerasModelBuilder(dataset=dataset_class(),model_id=model_no, **request_data)
     for layer in data['layers']:
         builder.add_layer(layer)
     builder.build(dir_path)
 
     return "{}"
 
+@cross_origin()
+@app.route('/model/info/<int:model_no>', methods=['GET'])
+def get_model_info(model_no):
+    model = get_model(model_no)
+    if model is None:
+        raise InvalidUsage("no dataset specified in request found in database")
+    return str(model)
 
 @cross_origin()
-@app.route('/model/<model_no>/<filename>', methods=['GET'])
-def get_model(model_no, filename):
+@app.route('/model/<int:model_no>/<filename>', methods=['GET'])
+def get_trained_model(model_no, filename):
     dir_path = get_db().cursor().execute("select dir_path from models where id=?", (model_no,)).fetchall()[0][0]
     return send_from_directory(dir_path, filename)
 
@@ -86,6 +94,13 @@ def get_image_json(dataset, image_id):
         image_str = '[' + ",".join(str(elem) for elem in mnist.test.images[image_id]) + ']'
         return str({"image": image_str, "label": label})
     return "There is no such dataset in the database"
+
+@app.route('/data/<string:datasetname>/info')
+def get_dataset_info(datasetname):
+    dataset = get_dataset(datasetname)
+    if dataset is not None:
+        return str(dataset)
+    raise InvalidUsage("no dataset specified in request found in database")
 
 
 @app.route('/data/<dataset>/bitmaps/<int:image_no>')
