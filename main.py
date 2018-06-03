@@ -1,14 +1,14 @@
 import json
 import os
 import sqlite3
-
-from flask import Flask, send_file, send_from_directory, request, jsonify, g
-import tensorflow as tf
-from flask_cors import CORS, cross_origin
 from io import BytesIO
 
+import tensorflow as tf
+from flask import Flask, send_file, send_from_directory, request, jsonify, g
+from flask_cors import CORS, cross_origin
+
 from datasets_map import datasets_map, get_dataset_class
-from db_helper import get_dataset, get_model
+from db_models import Dataset, Model
 from exceptions import InvalidUsage
 from keras_model_creator import KerasModelBuilder
 
@@ -27,25 +27,32 @@ def get_db():
 @app.route('/model', methods=['POST'])
 def put_model():
     data = request.get_json()
-    db = get_db()
-    cursor = db.cursor()
-    dataset_id = cursor.execute("select id from datasets where name=?",(data["dataset"],)).fetchall()[0][0]
-    cursor.execute("INSERT INTO models(dataset_id) values (?)",(dataset_id,))
-    model_id = cursor.lastrowid
-    dir_path = str.format("models/{}", model_id)
-    cursor.execute("UPDATE models set dir_path=? where id=?",(dir_path,model_id))
-    db.commit()
+    dataset = Dataset.select().where(Dataset.name==data["dataset"]).get()
+    new_model=Model()
+    new_model.dataset=dataset
+    new_model.save()
+    dir_path = str.format("models/{}", new_model.id)
+    new_model.dir_path=dir_path
+    new_model.save()
     os.makedirs(dir_path, exist_ok=True)
     with open(str.format('{}/input.json',dir_path), 'w+')as f:
         json.dump(data, f)
-    return str(model_id)
+    return str(new_model.get_id())
+
+@cross_origin()
+@app.route('/model', methods=['GET'])
+def get_models():
+    models = Model.select()
+    for model in models:
+        print(model.toJSON())
+    return "["+",".join([model.toJSON() for model in models])+"]"
 
 
 @cross_origin()
 @app.route('/model/<model_no>/train', methods=['POST'])
 def train_model(model_no):
     request_data = request.get_json()
-    dir_path = get_db().cursor().execute("select dir_path from models where id=?",(model_no,)).fetchall()[0][0]
+    dir_path = Model.select().where(Model.id==model_no).get().dir_path
     with open(str.format('{}/input.json', dir_path), 'r+')as f:
         data = json.load(f)
     if "dataset" not in data.keys():
@@ -56,21 +63,20 @@ def train_model(model_no):
     for layer in data['layers']:
         builder.add_layer(layer)
     builder.build(dir_path)
-
     return "{}"
 
 @cross_origin()
-@app.route('/model/info/<int:model_no>', methods=['GET'])
+@app.route('/model/<int:model_no>', methods=['GET'])
 def get_model_info(model_no):
-    model = get_model(model_no)
+    model = Model.select().where(Model.id==model_no).get()
     if model is None:
         raise InvalidUsage("no dataset specified in request found in database")
-    return str(model)
+    return model.toJSON()
 
 @cross_origin()
 @app.route('/model/<int:model_no>/<filename>', methods=['GET'])
 def get_trained_model(model_no, filename):
-    dir_path = get_db().cursor().execute("select dir_path from models where id=?", (model_no,)).fetchall()[0][0]
+    dir_path = Model.select().where(Model.id==model_no).get().dir_path
     return send_from_directory(dir_path, filename)
 
 
@@ -78,6 +84,7 @@ def get_trained_model(model_no, filename):
 @app.route('/data/<filename>')
 def hello_world(filename):
     return send_from_directory('./saved_model', filename)
+
 
 
 @cross_origin()
@@ -95,12 +102,7 @@ def get_image_json(dataset, image_id):
         return str({"image": image_str, "label": label})
     return "There is no such dataset in the database"
 
-@app.route('/data/<string:datasetname>/info')
-def get_dataset_info(datasetname):
-    dataset = get_dataset(datasetname)
-    if dataset is not None:
-        return str(dataset)
-    raise InvalidUsage("no dataset specified in request found in database")
+
 
 
 @app.route('/data/<dataset>/bitmaps/<int:image_no>')
@@ -111,6 +113,13 @@ def get_bitmap(dataset, image_no):
     image.save(byte_io, 'bmp')
     byte_io.seek(0)
     return send_file(byte_io, mimetype='image/bmp')
+
+@app.route('/data/<string:datasetname>/')
+def get_dataset_info(datasetname):
+    dataset = Dataset.select().where(Dataset.name==datasetname).get()
+    if dataset is not None:
+        return dataset.toJSON()
+    raise InvalidUsage("no dataset specified in request found in database")
 
 
 @app.errorhandler(InvalidUsage)

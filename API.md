@@ -35,7 +35,7 @@ ___
   returns: file with given filename from model files
 
 ___
-    /model/info/<model_no>
+    /model/<model_no>
   method: GET
   returns: json with model info. You may expect following fields in json:
   - "dataset"  (value is dataset name)

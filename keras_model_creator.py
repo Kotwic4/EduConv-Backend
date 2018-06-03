@@ -1,25 +1,28 @@
 from __future__ import print_function
-import keras
-from keras.callbacks import Callback
-from keras.layers import *
-import sys
-from keras.models import Sequential
-import tensorflowjs as tfjs
 
-from db_helper import add_epochs_to_learn, increment_learnt_epochs
+import sys
+from keras.layers import *
+import keras
+import tensorflowjs as tfjs
+from keras.callbacks import Callback
+from keras.models import Sequential
+
+from db_models import Model
 
 
 class ProgressCallback(Callback):
     def __init__(self,model_id):
         super().__init__()
-        self.model_id = model_id
+        self.db_model = Model.select().where(Model.id==model_id).get()
 
     def on_epoch_end(self, epoch, logs={}):
-        increment_learnt_epochs(self.model_id)
+        self.db_model.epochs_learnt+=1
+        self.db_model.save()
 
     def on_train_begin(self, logs=None):
         epochs = self.params["epochs"]
-        add_epochs_to_learn(self.model_id,epochs)
+        self.db_model.epochs_to_learn += epochs
+        self.db_model.save()
 
 
 class KerasModelBuilder:

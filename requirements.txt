@@ -4,3 +4,4 @@ PILLOW
 flask
 flask_cors
 tensorflowjs
+peewee
