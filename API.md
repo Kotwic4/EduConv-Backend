@@ -35,6 +35,13 @@ ___
   returns: file with given filename from model files
 
 ___
+  
+    /model
+    
+  method: GET
+  returns: list of models kept on server.
+
+___
     /model/<model_no>
   method: GET
   returns: json with model info. You may expect following fields in json:
@@ -49,7 +56,7 @@ ___
   method: GET
   returns: list of supported datasets (e.g. \["mnist","cifar-10"]) 
 ___
-    /data/<dataset>/info
+    /data/<dataset>/
   method: GET
   returns: json with dataset info. You may expect following fields in json:
  - "name"
