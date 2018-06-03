@@ -2,9 +2,10 @@
 
 
 ### Init database
-You will need to get sqlite3 first
+Following command will init empty db and insert mnist into datasets column 
+You may need to have sqlite3 installed
 ```
-sqlite3 db.sqlite < db_init.sql
+python3 db_models.py
 ```
 
 ### Running app

@@ -1,6 +1,5 @@
 import json
 import os
-import sqlite3
 import tarfile
 from urllib import request
 
