@@ -74,7 +74,7 @@
   ### get model info
   #### url
   ```
-  /model/info/<model_id>
+  /model/<model_id>
   ```
   #### method
   GET
@@ -90,7 +90,7 @@
   ### get model list
   #### url
   ```
-  /model/info
+  /model
   ```
   #### method
   GET
@@ -109,7 +109,7 @@
   ### get model list
   #### url
   ```
-  /model/file/<model_id>/<filename>
+  /model/<model_id>/file/<filename>
   ```
   #### method 
   GET
@@ -170,16 +170,6 @@
     ...
   ]
   ```
-  ### get file as json
-  #### url
-  ```
-  /data/<dataset_id>/<image_id>/json
-  ```
-  #### method
-  GET
-  #### returns
-  json map representing image from dataset
-  
   ### get file as jpg
   #### url
   ```
