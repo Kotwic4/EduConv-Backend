@@ -38,7 +38,7 @@ def get_schemes():
     schemes = Scheme.select()
     if len(schemes)==0:
         return "[]"
-    return '["id":' + ',"id":'.join([str(scheme.get_id()) for scheme in schemes]) + "]"
+    return [scheme.toJSON() for scheme in schemes]
 
 @cross_origin()
 @app.route('/model', methods=['GET'])
