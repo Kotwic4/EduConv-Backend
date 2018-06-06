@@ -41,7 +41,7 @@
   [
     {
       "id":schema_id
-      "json_schema":input.json (as it was sent)
+      "scheme_json":input.json (as it was sent)
     },
     ...
   ]
