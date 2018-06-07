@@ -30,7 +30,15 @@ def put_scheme():
     new_scheme=Scheme()
     new_scheme.scheme_json = json.dumps(data)
     new_scheme.save()
-    return json.dumps({"id":new_scheme.get_id()})
+    return new_scheme.toJSON()
+
+@cross_origin()
+@app.route('/scheme/<int:scheme_no>', methods=['GET'])
+def get_scheme_info(scheme_no):
+    scheme = Scheme.select().where(Scheme.id==scheme_no).get()
+    if scheme is None:
+        raise InvalidUsage("Scheme not found")
+    return scheme.toJSON()
 
 @cross_origin()
 @app.route('/scheme', methods=['GET'])
@@ -38,7 +46,7 @@ def get_schemes():
     schemes = Scheme.select()
     if len(schemes)==0:
         return "[]"
-    return [scheme.toJSON() for scheme in schemes]
+    return "["+",".join([scheme.toJSON() for scheme in schemes])+"]"
 
 @cross_origin()
 @app.route('/model', methods=['GET'])
