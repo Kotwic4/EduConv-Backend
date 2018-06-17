@@ -105,3 +105,4 @@ ENV/
 
 # training images
 data/
+db.sqlite

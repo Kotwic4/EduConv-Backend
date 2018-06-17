@@ -12,10 +12,10 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 
-# def get_db():
-#     if not hasattr(g, 'sqlite_db'):
-#         g.sqlite_db = sqlite3.connect("db.sqlite")
-#     return g.sqlite_db
+def get_db():
+    if not hasattr(g, 'sqlite_db'):
+        g.sqlite_db = sqlite3.connect("db.sqlite")
+    return g.sqlite_db
 
 @cross_origin()
 @app.route('/scheme', methods=['POST'])
