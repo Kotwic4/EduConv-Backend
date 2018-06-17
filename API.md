@@ -25,8 +25,24 @@
   #### returns
   ```
   {
-    "id":schema_id
-  }
+      "id":schema_id
+      "scheme_json":input.json (as it was sent)
+    },
+  ```
+  ### get all schema
+  #### url
+  ```
+  /scheme/<schema_id>
+  ```
+  #### method
+  GET
+
+  #### returns
+  ```
+  {
+      "id":schema_id
+      "scheme_json":input.json (as it was sent)
+    },
   ```
   ### get all schema
   #### url
@@ -57,7 +73,7 @@
   #### body
   ```
   {
-    "schema_id":schema_id
+    "scheme_id":schema_id
     "dataset":"dataset_name",
     "epochs":"epochs_number",
     "batch_size":"batch_size_number",
