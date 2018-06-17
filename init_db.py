@@ -4,7 +4,7 @@ import peewee
 import sqlite3
 
 from src.datasets.cifar10 import Cifar10Input
-from src.models.db_models import Dataset, Scheme, Model
+from src.models.db_models import Dataset, Model, Scheme
 
 database = peewee.SqliteDatabase('db.sqlite', **{})
 
