@@ -41,6 +41,7 @@
   [
     {
       "id":schema_id
+      "scheme_json":input.json (as it was sent)
     },
     ...
   ]
