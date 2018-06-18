@@ -24,7 +24,7 @@ class ModelController:
     def _get_model(model_no):
         model = Model.select().where(Model.id == model_no).get()
         if model is None:
-            raise InvalidUsage("no model specified in request found in database")
+            raise InvalidUsage("Model not found", status_code=404)
         return model
 
     @staticmethod
@@ -64,3 +64,8 @@ class ModelController:
         model = ModelController._get_model(model_no)
         dir_path = ModelController._model_path(model)
         return send_from_directory(dir_path, filename)
+
+    @staticmethod
+    def delete_model(model_no):
+        model = ModelController._get_model(model_no)
+        model.delete_instance()

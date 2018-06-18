@@ -17,6 +17,7 @@ def get_db():
         g.sqlite_db = sqlite3.connect("db.sqlite")
     return g.sqlite_db
 
+
 @cross_origin()
 @app.route('/scheme', methods=['POST'])
 def put_scheme():
@@ -28,6 +29,12 @@ def put_scheme():
 @app.route('/scheme/<int:scheme_no>', methods=['GET'])
 def get_scheme_info(scheme_no):
     return SchemeController.get_scheme_info(scheme_no)
+
+
+@cross_origin()
+@app.route('/scheme/<int:scheme_no>', methods=['DELETE'])
+def get_scheme_info(scheme_no):
+    return SchemeController.delete_scheme(scheme_no)
 
 
 @cross_origin()
@@ -53,6 +60,12 @@ def train_model():
 @app.route('/model/<int:model_no>', methods=['GET'])
 def get_model_info(model_no):
     return ModelController.get_model_info(model_no)
+
+
+@cross_origin()
+@app.route('/model/<int:model_no>', methods=['DELETE'])
+def get_model_info(model_no):
+    return ModelController.delete_model(model_no)
 
 
 @cross_origin()
