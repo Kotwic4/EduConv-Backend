@@ -103,6 +103,7 @@
         "id": id,
         "name":name,
         "train_images_count": files_numer,
+        "test_images_count": files_numer,
         "img_width": pixel_number,
         "img_height": pixel_number,
         "img_depth": channels_number,
@@ -133,6 +134,7 @@
         "id": id,
         "name":name,
         "train_images_count": files_numer,
+        "test_images_count": files_numer,
         "img_width": pixel_number,
         "img_height": pixel_number,
         "img_depth": channels_number,
@@ -174,6 +176,7 @@
     "id": id
     "name":name,
     "train_images_count": files_numer,
+    "test_images_count": files_numer,
     "img_width": pixel_number,
     "img_height": pixel_number,
     "img_depth": channels_number,
@@ -200,6 +203,7 @@
       "id": id,
       "name":name,
       "train_images_count": files_numer,
+      "test_images_count": files_numer,
       "img_width": pixel_number,
       "img_height": pixel_number,
       "img_depth": channels_number,
@@ -216,7 +220,7 @@
   ### get file as jpg
   #### url
   ```
-  /data/<dataset_id>/<image_id>/bitmaps
+  /data/<dataset_id>/bitmaps/<image_id>
   ```
   #### method
   GET
