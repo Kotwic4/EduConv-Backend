@@ -9,6 +9,12 @@ class BaseModel(Model):
     class Meta:
         database = database
 
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+    def to_dict(self):
+        pass
+
 
 class Dataset(BaseModel):
     img_depth = IntegerField(null=True)
@@ -19,8 +25,8 @@ class Dataset(BaseModel):
     test_images_count = IntegerField(null=True)
     train_images_count = IntegerField(null=True)
 
-    def to_json(self):
-        return json.dumps({
+    def to_dict(self):
+        return {
             "id": self.get_id(),
             "name": self.name,
             "train_images_count": self.train_images_count,
@@ -28,7 +34,7 @@ class Dataset(BaseModel):
             "img_width": self.img_width,
             "img_height": self.img_height,
             "labels": json.loads(self.labels)
-        })
+        }
 
     class Meta:
         table_name = 'datasets'
@@ -40,8 +46,8 @@ class Scheme(BaseModel):
     class Meta:
         table_name = 'schemes'
 
-    def to_json(self):
-        return json.dumps({"id": self.get_id(), "scheme_json": json.loads(self.scheme_json)})
+    def to_dict(self):
+        return {"id": self.get_id(), "scheme_json": json.loads(self.scheme_json)}
 
 
 class Model(BaseModel):
@@ -50,13 +56,13 @@ class Model(BaseModel):
     epochs_to_learn = IntegerField(constraints=[SQL("DEFAULT 0")], null=True)
     scheme = ForeignKeyField(column_name='scheme_id', field='id', model=Scheme, null=True)
 
-    def to_json(self):
-        return json.dumps({
+    def to_dict(self):
+        return {
             "id": self.get_id(),
-            "dataset": self.dataset.toJSON,
+            "dataset": self.dataset.to_dict(),
             "epochs_learnt": self.epochs_learnt,
             "epochs_to_learn": self.epochs_to_learn
-        })
+        }
 
     class Meta:
         table_name = 'models'

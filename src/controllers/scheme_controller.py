@@ -1,5 +1,7 @@
 import json
 
+from flask import jsonify
+
 from src.exceptions.invalid_usage import InvalidUsage
 from src.models.db_models import Scheme
 
@@ -18,17 +20,17 @@ class SchemeController:
         new_scheme = Scheme()
         new_scheme.scheme_json = json.dumps(body)
         new_scheme.save()
-        return new_scheme.to_json()
+        return jsonify(new_scheme.to_dict())
 
     @staticmethod
     def get_scheme_info(scheme_no):
         scheme = SchemeController._get_scheme(scheme_no)
-        return scheme.to_json()
+        return jsonify(scheme.to_dict())
 
     @staticmethod
     def get_schemes():
         schemes = Scheme.select()
-        return "[" + ",".join([scheme.to_json() for scheme in schemes]) + "]"
+        return jsonify([scheme.to_dict() for scheme in schemes])
 
     @staticmethod
     def delete_scheme(scheme_no):

@@ -1,6 +1,7 @@
+import sqlite3
+
 from flask import Flask, request, jsonify, g
 from flask_cors import CORS, cross_origin
-import sqlite3
 
 from src.controllers.dataset_controller import DatasetController
 from src.controllers.model_controller import ModelController

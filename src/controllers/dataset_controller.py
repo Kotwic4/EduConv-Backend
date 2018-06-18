@@ -1,7 +1,6 @@
-import json
 from io import BytesIO
 
-from flask import send_file
+from flask import send_file, jsonify
 
 from src.datasets.datasets_map import check_if_dataset_class_exists, datasets_map
 from src.exceptions.invalid_usage import InvalidUsage
@@ -29,9 +28,9 @@ class DatasetController:
 
     @staticmethod
     def get_datasets():
-        return json.dumps(list(datasets_map.keys()))
+        return jsonify(list(datasets_map.keys()))
 
     @staticmethod
     def get_dataset_info(dataset_id):
         dataset = DatasetController._get_dataset(dataset_id)
-        return dataset.to_json()
+        return jsonify(dataset.to_dict())

@@ -1,4 +1,4 @@
-from flask import send_from_directory
+from flask import send_from_directory, jsonify
 
 from src.datasets.datasets_map import check_if_dataset_class_exists
 from src.exceptions.invalid_usage import InvalidUsage
@@ -10,7 +10,7 @@ class ModelController:
 
     @staticmethod
     def _model_path(model):
-        return "models/" + str(model.get_id())
+        return "models/" + str(model.get_id)
 
     @staticmethod
     def _create_model(scheme, dataset):
@@ -50,16 +50,16 @@ class ModelController:
         dir_path = ModelController._model_path(model)
         builder.build(dir_path)
 
-        return model.to_json()
+        return jsonify(model.to_dict())
 
     @staticmethod
     def get_model_info(model_no):
-        return ModelController._get_model(model_no)
+        return jsonify(ModelController._get_model(model_no).to_dict())
 
     @staticmethod
     def get_models():
         models = Model.select()
-        return "[" + ",".join([model.to_json() for model in models]) + "]"
+        return jsonify([model.to_dict() for model in models])
 
     @staticmethod
     def get_trained_model(model_no, filename):

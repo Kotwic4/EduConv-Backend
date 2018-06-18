@@ -6,12 +6,12 @@ You may need to have sqlite3 installed
 
 #### Linux
 ```
-python3 src/init_db.py
+python3 init_db.py
 ```
 
 #### Windows
 ```
-python src/init_db.py
+python init_db.py
 ```
 
 ### Running app
