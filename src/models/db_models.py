@@ -2,7 +2,7 @@ import json
 
 from peewee import *
 
-database = SqliteDatabase('db.sqlite', **{})
+database = SqliteDatabase('db/db.sqlite', **{})
 
 
 class BaseModel(Model):

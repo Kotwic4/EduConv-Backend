@@ -1,5 +1,3 @@
-import sqlite3
-
 from flask import Flask, request, jsonify, g
 from flask_cors import CORS, cross_origin
 
@@ -11,12 +9,6 @@ from src.exceptions.invalid_usage import InvalidUsage
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-
-
-def get_db():
-    if not hasattr(g, 'sqlite_db'):
-        g.sqlite_db = sqlite3.connect("db.sqlite")
-    return g.sqlite_db
 
 
 @cross_origin()

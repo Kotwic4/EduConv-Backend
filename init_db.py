@@ -6,7 +6,7 @@ import sqlite3
 from src.datasets.cifar10 import Cifar10Input
 from src.models.db_models import Dataset, Model, Scheme
 
-database = peewee.SqliteDatabase('db.sqlite', **{})
+database = peewee.SqliteDatabase('db/db.sqlite', **{})
 
 
 def init_database():
@@ -27,7 +27,7 @@ def add_mnist():
     
     
 def add_cifar():
-    db = sqlite3.connect("../db.sqlite")
+    db = sqlite3.connect("db/db.sqlite")
     Cifar10Input.acquire(db)
     db.close()
 

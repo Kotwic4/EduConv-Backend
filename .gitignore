@@ -106,5 +106,4 @@ ENV/
 # training images
 data/
 
-db.sqlite
-models
+db/

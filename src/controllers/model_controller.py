@@ -10,7 +10,7 @@ class ModelController:
 
     @staticmethod
     def _model_path(model):
-        return "models/" + str(model.get_id)
+        return "db/models/" + str(model.get_id)
 
     @staticmethod
     def _create_model(scheme, dataset):

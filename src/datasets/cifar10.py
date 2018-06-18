@@ -9,6 +9,7 @@ import numpy
 from PIL import Image
 from keras.utils import np_utils
 
+DEFAULT_PATH = "db/datasets/Cifar-10/cifar-10-batches-py/"
 
 def unpickle(file):
     with open(file, 'rb') as fo:
@@ -21,7 +22,7 @@ class Cifar10Input:
         if path is not None:
             self.path = path
         else:
-            self.path = "datasets/Cifar-10/cifar-10-batches-py/"
+            self.path = DEFAULT_PATH
         self.batch_size = 32
         self.num_classes = 10
 
@@ -54,17 +55,17 @@ class Cifar10Input:
 
     @staticmethod
     def acquire(db, path=None):
+        print("acquire")
         url = 'https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz'
         if path is not None:
             path = path
         else:
-            path = "Cifar-10/"
-        if not os.path.isfile(path + "cifar-10-batches-py/batches.meta"):
+            path = DEFAULT_PATH
+        if not os.path.isfile(path + "batches.meta"):
             file_tmp, http_message = request.urlretrieve(url)
             tar = tarfile.open(file_tmp)
             tar.extractall(path)
             tar.close()
-        path += "cifar-10-batches-py/"
         if db.cursor().execute('SELECT * FROM datasets WHERE name=?', ('cifar-10',)).fetchone() is None:
             db.cursor().execute('INSERT INTO datasets'
                                 '(name,train_images_count,test_images_count,img_width,img_height,img_depth,labels) '
@@ -77,7 +78,7 @@ class Cifar10Input:
     def get_bitmap(image_no):
         batch_no = image_no // 10000 + 1
         image_in_batch = image_no % 10000
-        data_batch = unpickle("datasets/Cifar-10/cifar-10-batches-py/data_batch_" + str(batch_no))
+        data_batch = unpickle(DEFAULT_PATH + "data_batch_" + str(batch_no))
         image_np_array = data_batch[b'data'].reshape(10000, 3, 32, 32)[image_in_batch]
         numpy.swapaxes(numpy.swapaxes(image_np_array, 0, 1), 1, 2)
         image = Image.fromarray((numpy.swapaxes(numpy.swapaxes(image_np_array, 0, 1), 1, 2) * 255).astype('uint8'),
@@ -89,6 +90,6 @@ class Cifar10Input:
         if path is not None:
             path = path
         else:
-            path = "datasets/Cifar-10/cifar-10-batches-py/"
+            path = DEFAULT_PATH
         meta_data = unpickle(path + "batches.meta")
         return [label.decode() for label in meta_data[b'label_names']]
