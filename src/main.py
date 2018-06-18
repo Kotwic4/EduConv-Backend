@@ -33,7 +33,7 @@ def get_scheme_info(scheme_no):
 
 @cross_origin()
 @app.route('/scheme/<int:scheme_no>', methods=['DELETE'])
-def get_scheme_info(scheme_no):
+def delete_scheme(scheme_no):
     return SchemeController.delete_scheme(scheme_no)
 
 
@@ -64,7 +64,7 @@ def get_model_info(model_no):
 
 @cross_origin()
 @app.route('/model/<int:model_no>', methods=['DELETE'])
-def get_model_info(model_no):
+def delete_model(model_no):
     return ModelController.delete_model(model_no)
 
 

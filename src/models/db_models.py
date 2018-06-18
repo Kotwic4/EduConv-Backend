@@ -1,23 +1,23 @@
 import json
 
-import peewee
+from peewee import *
 
-database = peewee.SqliteDatabase('db.sqlite', **{})
+database = SqliteDatabase('db.sqlite', **{})
 
 
-class BaseModel(peewee.Model):
+class BaseModel(Model):
     class Meta:
         database = database
 
 
 class Dataset(BaseModel):
-    img_depth = peewee.IntegerField(null=True)
-    img_height = peewee.IntegerField(null=True)
-    img_width = peewee.IntegerField(null=True)
-    labels = peewee.TextField(null=True)
-    name = peewee.TextField(null=True, unique=True)
-    test_images_count = peewee.IntegerField(null=True)
-    train_images_count = peewee.IntegerField(null=True)
+    img_depth = IntegerField(null=True)
+    img_height = IntegerField(null=True)
+    img_width = IntegerField(null=True)
+    labels = TextField(null=True)
+    name = TextField(null=True, unique=True)
+    test_images_count = IntegerField(null=True)
+    train_images_count = IntegerField(null=True)
 
     def to_json(self):
         return json.dumps({
@@ -35,7 +35,7 @@ class Dataset(BaseModel):
 
 
 class Scheme(BaseModel):
-    scheme_json = peewee.TextField(null=False)
+    scheme_json = TextField(null=False)
 
     class Meta:
         table_name = 'schemes'
@@ -45,10 +45,10 @@ class Scheme(BaseModel):
 
 
 class Model(BaseModel):
-    dataset = peewee.ForeignKeyField(column_name='dataset_id', field='id', model=Dataset, null=True)
-    epochs_learnt = peewee.IntegerField(constraints=[peewee.SQL("DEFAULT 0")], null=True)
-    epochs_to_learn = peewee.IntegerField(constraints=[peewee.SQL("DEFAULT 0")], null=True)
-    scheme = peewee.ForeignKeyField(column_name='scheme_id', field='id', model=Scheme, null=True)
+    dataset = ForeignKeyField(column_name='dataset_id', field='id', model=Dataset, null=True)
+    epochs_learnt = IntegerField(constraints=[SQL("DEFAULT 0")], null=True)
+    epochs_to_learn = IntegerField(constraints=[SQL("DEFAULT 0")], null=True)
+    scheme = ForeignKeyField(column_name='scheme_id', field='id', model=Scheme, null=True)
 
     def to_json(self):
         return json.dumps({

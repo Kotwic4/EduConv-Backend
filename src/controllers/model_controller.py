@@ -17,6 +17,8 @@ class ModelController:
         model = Model()
         model.scheme = scheme
         model.dataset = dataset
+        model.epochs_learnt = 0
+        model.epochs_to_learn = 0
         model.save()
         return model
 
@@ -46,7 +48,7 @@ class ModelController:
         del body["scheme_id"]
         builder = KerasModelBuilder(dataset=dataset_class(), db_model=model, **body)
         dir_path = ModelController._model_path(model)
-        builder.train(dir_path)
+        builder.build(dir_path)
 
         return model.to_json()
 

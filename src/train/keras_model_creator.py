@@ -1,7 +1,6 @@
 from __future__ import print_function
 
 import json
-import sys
 
 import keras
 import tensorflowjs as tfjs
@@ -33,7 +32,7 @@ class KerasModelBuilder:
         self.db_model = db_model
 
     def add_layer(self, layer_dict):
-        layer_class = getattr(sys.modules[__name__], layer_dict['layer_name'])
+        layer_class = getattr(keras.layers, layer_dict['layer_name'])
         self.model.add(layer_class(**layer_dict['args']))
 
     def add_layers(self, layers_dicts):
