@@ -1,15 +1,17 @@
 import json
 
+import os
 import peewee
 import sqlite3
 
 from src.datasets.cifar10 import Cifar10Input
 from src.models.db_models import Dataset, Model, Scheme
 
-database = peewee.SqliteDatabase('db/db.sqlite', **{})
-
 
 def init_database():
+    if not os.path.exists('db'):
+        os.makedirs('db')
+    database = peewee.SqliteDatabase('db/db.sqlite', **{})
     database.create_tables([Model, Dataset, Scheme])
     database.close()
 

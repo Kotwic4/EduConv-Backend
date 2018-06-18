@@ -9,7 +9,9 @@ import numpy
 from PIL import Image
 from keras.utils import np_utils
 
-DEFAULT_PATH = "db/datasets/Cifar-10/cifar-10-batches-py/"
+DEFAULT_SHORT_PATH = "db/datasets/Cifar-10/"
+PATH_EXTENSION = "cifar-10-batches-py/"
+DEFAULT_PATH = DEFAULT_SHORT_PATH+PATH_EXTENSION
 
 def unpickle(file):
     with open(file, 'rb') as fo:
@@ -55,17 +57,17 @@ class Cifar10Input:
 
     @staticmethod
     def acquire(db, path=None):
-        print("acquire")
         url = 'https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz'
         if path is not None:
             path = path
         else:
-            path = DEFAULT_PATH
-        if not os.path.isfile(path + "batches.meta"):
+            path = DEFAULT_SHORT_PATH
+        if not os.path.isfile(path + PATH_EXTENSION + "batches.meta"):
             file_tmp, http_message = request.urlretrieve(url)
             tar = tarfile.open(file_tmp)
             tar.extractall(path)
             tar.close()
+        path = path + PATH_EXTENSION
         if db.cursor().execute('SELECT * FROM datasets WHERE name=?', ('cifar-10',)).fetchone() is None:
             db.cursor().execute('INSERT INTO datasets'
                                 '(name,train_images_count,test_images_count,img_width,img_height,img_depth,labels) '
