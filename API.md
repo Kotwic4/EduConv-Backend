@@ -27,7 +27,7 @@
   {
       "id":schema_id
       "scheme_json":input.json (as it was sent)
-    },
+  },
   ```
   ### get all schema
   #### url
@@ -42,7 +42,7 @@
   {
       "id":schema_id
       "scheme_json":input.json (as it was sent)
-    },
+  },
   ```
   ### get all schema
   #### url
@@ -99,7 +99,20 @@
   ```
   {
     "id":model_id
-    "dataset":"dataset_name",
+    "dataset": {
+        "id": id,
+        "name":name,
+        "train_images_count": files_numer,
+        "img_width": pixel_number,
+        "img_height": pixel_number,
+        "img_depth": channels_number,
+        "labels":[
+          label_1,
+          label_2,
+          label_3,
+          ...
+         ]
+      },
     "epochs_learnt":"epochs_number",
     "epochs_to_learn":"epochs_number",
   }
@@ -116,7 +129,20 @@
   [
     {
       "id":model_id
-      "dataset":"dataset_name",
+      "dataset": {
+        "id": id,
+        "name":name,
+        "train_images_count": files_numer,
+        "img_width": pixel_number,
+        "img_height": pixel_number,
+        "img_depth": channels_number,
+        "labels":[
+          label_1,
+          label_2,
+          label_3,
+          ...
+         ]
+      },
       "epochs_learnt":"epochs_number",
       "epochs_to_learn":"epochs_number",
     },
