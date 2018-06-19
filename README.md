@@ -28,7 +28,7 @@ python3 -m flask run --host=HOST_IP --port=PORT
 
 ```
 pip install -r requirements.txt
-set FLASK_APP=./src/main.py
+set FLASK_APP=./main.py
 python -m flask run --host=HOST_IP --port=PORT
 ```
 

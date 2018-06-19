@@ -33,6 +33,7 @@ class Dataset(BaseModel):
             "test_images_count": self.test_images_count,
             "img_width": self.img_width,
             "img_height": self.img_height,
+            "img_depth": self.img_depth,
             "labels": json.loads(self.labels)
         }
 
