@@ -25,8 +25,24 @@
   #### returns
   ```
   {
-    "id":schema_id
-  }
+      "id":schema_id
+      "scheme_json":input.json (as it was sent)
+  },
+  ```
+  ### get all schema
+  #### url
+  ```
+  /scheme/<schema_id>
+  ```
+  #### method
+  GET
+
+  #### returns
+  ```
+  {
+      "id":schema_id
+      "scheme_json":input.json (as it was sent)
+  },
   ```
   ### get all schema
   #### url
@@ -57,7 +73,7 @@
   #### body
   ```
   {
-    "schema_id":schema_id
+    "scheme_id":schema_id
     "dataset":"dataset_name",
     "epochs":"epochs_number",
     "batch_size":"batch_size_number",
@@ -83,7 +99,21 @@
   ```
   {
     "id":model_id
-    "dataset":"dataset_name",
+    "dataset": {
+        "id": id,
+        "name":name,
+        "train_images_count": files_numer,
+        "test_images_count": files_numer,
+        "img_width": pixel_number,
+        "img_height": pixel_number,
+        "img_depth": channels_number,
+        "labels":[
+          label_1,
+          label_2,
+          label_3,
+          ...
+         ]
+      },
     "epochs_learnt":"epochs_number",
     "epochs_to_learn":"epochs_number",
   }
@@ -100,7 +130,21 @@
   [
     {
       "id":model_id
-      "dataset":"dataset_name",
+      "dataset": {
+        "id": id,
+        "name":name,
+        "train_images_count": files_numer,
+        "test_images_count": files_numer,
+        "img_width": pixel_number,
+        "img_height": pixel_number,
+        "img_depth": channels_number,
+        "labels":[
+          label_1,
+          label_2,
+          label_3,
+          ...
+         ]
+      },
       "epochs_learnt":"epochs_number",
       "epochs_to_learn":"epochs_number",
     },
@@ -132,6 +176,7 @@
     "id": id
     "name":name,
     "train_images_count": files_numer,
+    "test_images_count": files_numer,
     "img_width": pixel_number,
     "img_height": pixel_number,
     "img_depth": channels_number,
@@ -158,6 +203,7 @@
       "id": id,
       "name":name,
       "train_images_count": files_numer,
+      "test_images_count": files_numer,
       "img_width": pixel_number,
       "img_height": pixel_number,
       "img_depth": channels_number,
@@ -174,7 +220,7 @@
   ### get file as jpg
   #### url
   ```
-  /data/<dataset_id>/<image_id>/bitmaps
+  /data/<dataset_id>/bitmaps/<image_id>
   ```
   #### method
   GET
