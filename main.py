@@ -45,9 +45,7 @@ def get_models():
 @cross_origin()
 @app.route('/model', methods=['POST'])
 def train_model():
-    print("1")
     body = request.get_json()
-    print("2")
     if ModelController.train_model(body):
         return "created", 201
 

@@ -1,3 +1,5 @@
+import threading
+
 from flask import send_from_directory, jsonify
 
 from src.datasets.datasets_map import check_if_dataset_class_exists
@@ -48,9 +50,10 @@ class ModelController:
         del body["scheme_id"]
         builder = KerasModelBuilder(dataset=dataset_class(), db_model=model, **body)
         dir_path = ModelController._model_path(model)
-        builder.build(dir_path)
-
-        return jsonify(model.to_dict())
+        thread = threading.Thread(target=KerasModelBuilder.build, args=(builder, dir_path))
+        thread.daemon = True  # Daemonize thread
+        thread.start()  # Start the execution
+        return True
 
     @staticmethod
     def get_model_info(model_no):
