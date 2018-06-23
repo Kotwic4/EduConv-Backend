@@ -73,10 +73,10 @@
   #### body
   ```
   {
-    "scheme_id":schema_id
+    "scheme_id":schema_id,
     "dataset":"dataset_name",
-    "epochs":"epochs_number",
-    "batch_size":"batch_size_number",
+    "epochs":epochs_number,
+    "batch_size":batch_size_number
   }
   ```
   #### returns
