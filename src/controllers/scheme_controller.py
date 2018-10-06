@@ -10,9 +10,8 @@ class SchemeController:
 
     @staticmethod
     def _get_scheme(scheme_no):
-        try:
-            scheme = Scheme.select().where(Scheme.id == scheme_no).get()
-        except:
+        scheme = Scheme.get_or_none(Scheme.id == scheme_no)
+        if scheme is None:
             raise InvalidUsage("Scheme not found", status_code=404)
         return scheme
 

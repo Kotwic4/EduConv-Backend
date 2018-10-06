@@ -6,6 +6,8 @@ class InvalidUsage(Exception):
         self.message = message
         if status_code is not None:
             self.status_code = status_code
+        else:
+            self.status_code = 400
         self.payload = payload
 
     def to_dict(self):

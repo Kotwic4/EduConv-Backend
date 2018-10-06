@@ -59,7 +59,8 @@ def get_model_info(model_no):
 @cross_origin()
 @app.route('/model/<int:model_no>', methods=['DELETE'])
 def delete_model(model_no):
-    return ModelController.delete_model(model_no)
+    ModelController.delete_model(model_no)
+    return "{}",200
 
 
 @cross_origin()

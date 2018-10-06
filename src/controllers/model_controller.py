@@ -1,5 +1,7 @@
+import shutil
 import threading
 import time
+from os import path
 
 from flask import send_from_directory, jsonify
 
@@ -27,9 +29,8 @@ class ModelController:
 
     @staticmethod
     def _get_model(model_no):
-        try:
-            model = Model.select().where(Model.id == model_no).get()
-        except:
+        model = Model.get_or_none(Model.id == model_no)
+        if model is None:
             raise InvalidUsage("Model not found", status_code=404)
         return model
 
@@ -75,4 +76,5 @@ class ModelController:
     @staticmethod
     def delete_model(model_no):
         model = ModelController._get_model(model_no)
+        shutil.rmtree(ModelController._model_path(model))
         model.delete_instance()
