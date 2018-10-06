@@ -1,4 +1,5 @@
 import threading
+import time
 
 from flask import send_from_directory, jsonify
 
@@ -26,8 +27,9 @@ class ModelController:
 
     @staticmethod
     def _get_model(model_no):
-        model = Model.select().where(Model.id == model_no).get()
-        if model is None:
+        try:
+            model = Model.select().where(Model.id == model_no).get()
+        except:
             raise InvalidUsage("Model not found", status_code=404)
         return model
 
