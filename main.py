@@ -47,7 +47,7 @@ def get_models():
 def train_model():
     body = request.get_json()
     if ModelController.train_model(body):
-        return "created", 201
+        return "{}", 200
 
 
 @cross_origin()
