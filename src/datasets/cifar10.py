@@ -95,3 +95,9 @@ class Cifar10Input:
             path = DEFAULT_PATH
         meta_data = unpickle(path + "batches.meta")
         return [label.decode() for label in meta_data[b'label_names']]
+
+    @staticmethod
+    def get_bitmap_directory(train_dataset=False):
+        if train_dataset:
+            return "db/datasets/Cifar-10/train/"
+        return "db/datasets/Cifar-10/test/"

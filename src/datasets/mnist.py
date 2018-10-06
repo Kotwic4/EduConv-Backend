@@ -42,3 +42,17 @@ class MnistInput:
             data = x_test
         image_array = data.reshape(data.shape[0], 28, 28)[image_no].astype('uint8')
         return Image.fromarray(image_array, 'L')
+
+    @staticmethod
+    def get_bitmap_directory(train_dataset=False):
+        if(train_dataset):    
+            return "db/datasets/mnist/train/"
+        return "db/datasets/mnist/test/"
+
+    @staticmethod
+    def get_label(image_no, train_dataset=False):
+        if train_dataset:
+            with open("db/datasets/mnist/train/labels.txt") as f:
+                return f.readline().split(' ')[image_no]
+        with open("db/datasets/mnist/test/labels.txt") as f:
+                return f.readline().split(' ')[image_no]

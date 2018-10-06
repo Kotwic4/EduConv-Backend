@@ -76,6 +76,9 @@ def get_datasets():
 @app.route('/data/<dataset_id>/bitmaps/<int:image_no>')
 def get_bitmap(dataset_id, image_no):
     return DatasetController.get_bitmap(dataset_id, image_no)
+@app.route('/data/<dataset_id>/label/<int:image_no>')
+def get_label(dataset_id, image_no):
+    return DatasetController.get_label(dataset_id, image_no)
 
 
 @app.route('/data/<int:dataset_id>/')
