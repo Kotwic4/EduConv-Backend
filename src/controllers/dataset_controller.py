@@ -11,7 +11,7 @@ class DatasetController:
 
     @staticmethod
     def _get_dataset(dataset_id):
-        dataset = Dataset.select().where(Dataset.id == dataset_id).get()
+        dataset = Dataset.get_or_none(Dataset.id == dataset_id)
         if dataset is None:
             raise InvalidUsage("Dataset not found", status_code=404)
         return dataset
@@ -28,7 +28,7 @@ class DatasetController:
 
     @staticmethod
     def get_datasets():
-        return jsonify(list(datasets_map.keys()))
+        return jsonify(list(map(lambda x: x.to_dict(), Dataset.select())))
 
     @staticmethod
     def get_dataset_info(dataset_id):
