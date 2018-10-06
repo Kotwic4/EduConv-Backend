@@ -34,7 +34,7 @@ class DatasetController:
 
     @staticmethod
     def get_datasets():
-        return jsonify(list(datasets_map.keys()))
+        return jsonify(list(map(lambda x: x.to_dict(), Dataset.select())))
 
     @staticmethod
     def get_dataset_info(dataset_id):
