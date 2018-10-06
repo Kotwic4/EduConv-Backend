@@ -51,8 +51,9 @@ class MnistInput:
 
     @staticmethod
     def get_label(image_no, train_dataset=False):
+        
         if train_dataset:
-            with open("db/datasets/mnist/train/labels.txt") as f:
+            with open("db/datasets/mnist/train/labels.txt","r") as f:
                 return f.readline().split(' ')[image_no]
-        with open("db/datasets/mnist/test/labels.txt") as f:
+        with open("db/datasets/mnist/test/labels.txt","r") as f:
                 return f.readline().split(' ')[image_no]

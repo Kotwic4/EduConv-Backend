@@ -217,12 +217,27 @@
     ...
   ]
   ```
-  ### get file as jpg
+  ### get file as bmp
   #### url
   ```
   /data/<dataset_id>/bitmaps/<image_id>
   ```
   #### method
   GET
+  #### params:
+  dataset=[train|test]
   #### returns
-  image as jpg file
+  image as bmp file
+  
+  /data/<dataset_id>/label/<image_id>
+  ```
+  #### method
+  GET
+  #### params:
+  dataset=[train|test]
+  #### returns
+  ```
+  {
+     "label":label
+  }
+  ```
