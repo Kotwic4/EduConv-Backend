@@ -54,6 +54,9 @@ class Cifar10Input:
         self.x_test /= 255
         self.y_train = np_utils.to_categorical(labels, 10)
         self.y_test = np_utils.to_categorical(test_labels, 10)
+        self.train_labels = labels
+        self.test_labels=test_labels
+        
 
     @staticmethod
     def acquire(db, path=None):
@@ -75,17 +78,22 @@ class Cifar10Input:
                                 ["cifar-10", 50000, 10000, 32, 32, 3,
                                  str(json.dumps(Cifar10Input.get_labels(path)))])
             db.commit()
-
-    @staticmethod
-    def get_bitmap(image_no):
-        batch_no = image_no // 10000 + 1
-        image_in_batch = image_no % 10000
-        data_batch = unpickle(DEFAULT_PATH + "data_batch_" + str(batch_no))
-        image_np_array = data_batch[b'data'].reshape(10000, 3, 32, 32)[image_in_batch]
-        numpy.swapaxes(numpy.swapaxes(image_np_array, 0, 1), 1, 2)
-        image = Image.fromarray((numpy.swapaxes(numpy.swapaxes(image_np_array, 0, 1), 1, 2) * 255).astype('uint8'),
-                                'RGB')
-        return image
+        c = Cifar10Input()
+        ensure_directory(Cifar10Input.get_bitmap_directory(False))
+        ensure_directory(Cifar10Input.get_bitmap_directory(True))
+        for i, img_array in enumerate(c.x_train):
+            img_path = os.path.join(Cifar10Input.get_bitmap_directory(True),str(i)+".bmp")
+            img = Image.fromarray((img_array * 255).astype('uint8'))
+            img.save(img_path,'bmp')
+        for i, img_array in enumerate(c.x_test):
+            img_path = os.path.join(Cifar10Input.get_bitmap_directory(False),str(i)+".bmp")
+            img = Image.fromarray((img_array * 255).astype('uint8'))
+            img.save(img_path,'bmp')
+        labels = Cifar10Input.get_labels()
+        with open(os.path.join(Cifar10Input.get_bitmap_directory(True),"labels.txt"),"w+") as labels_file:
+            labels_file.writelines([labels[i] for i in c.train_labels])
+        with open(os.path.join(Cifar10Input.get_bitmap_directory(False),"labels.txt"),"w+") as labels_file:
+            labels_file.writelines([labels[i] for i in c.test_labels])
 
     @staticmethod
     def get_labels(path=None):
@@ -101,3 +109,7 @@ class Cifar10Input:
         if train_dataset:
             return "db/datasets/Cifar-10/train/"
         return "db/datasets/Cifar-10/test/"
+
+def ensure_directory(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)

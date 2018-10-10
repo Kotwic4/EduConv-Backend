@@ -34,16 +34,6 @@ class MnistInput:
         self.y_test = keras.utils.to_categorical(self.y_test, self.num_classes)
 
     @staticmethod
-    def get_bitmap(image_no, from_train_dataset=False):
-        (x_train, y_train), (x_test, y_test) = mnist.load_data()
-        if from_train_dataset:
-            data = x_train
-        else:
-            data = x_test
-        image_array = data.reshape(data.shape[0], 28, 28)[image_no].astype('uint8')
-        return Image.fromarray(image_array, 'L')
-
-    @staticmethod
     def get_bitmap_directory(train_dataset=False):
         if(train_dataset):    
             return "db/datasets/mnist/train/"

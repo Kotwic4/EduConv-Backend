@@ -93,8 +93,7 @@ def get_label(dataset_id, image_no):
 @app.route('/data/<int:dataset_id>/')
 def get_dataset_info(dataset_id):
     return DatasetController.get_dataset_info(dataset_id)
-
-
+    
 @app.errorhandler(InvalidUsage)
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
