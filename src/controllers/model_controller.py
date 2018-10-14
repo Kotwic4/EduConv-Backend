@@ -53,7 +53,7 @@ class ModelController:
         thread = threading.Thread(target=KerasModelBuilder.build, args=(builder, dir_path))
         thread.daemon = True  # Daemonize thread
         thread.start()  # Start the execution
-        return model.get_id()
+        return jsonify(model.to_dict())
 
     @staticmethod
     def get_model_info(model_no):
