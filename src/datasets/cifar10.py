@@ -79,21 +79,19 @@ class Cifar10Input:
                                  str(json.dumps(Cifar10Input.get_labels(path)))])
             db.commit()
         c = Cifar10Input()
-        ensure_directory(Cifar10Input.get_bitmap_directory(False))
-        ensure_directory(Cifar10Input.get_bitmap_directory(True))
-        for i, img_array in enumerate(c.x_train):
-            img_path = os.path.join(Cifar10Input.get_bitmap_directory(True),str(i)+".bmp")
-            img = Image.fromarray((img_array * 255).astype('uint8'))
-            img.save(img_path,'bmp')
-        for i, img_array in enumerate(c.x_test):
-            img_path = os.path.join(Cifar10Input.get_bitmap_directory(False),str(i)+".bmp")
-            img = Image.fromarray((img_array * 255).astype('uint8'))
-            img.save(img_path,'bmp')
+        Cifar10Input.save_images(c.x_train,c.train_labels,Cifar10Input.get_bitmap_directory(True))
+        Cifar10Input.save_images(c.x_test,c.test_labels,Cifar10Input.get_bitmap_directory(False))
+
+    @staticmethod
+    def save_images(image_set, labels_set, bitmap_directory):
         labels = Cifar10Input.get_labels()
-        with open(os.path.join(Cifar10Input.get_bitmap_directory(True),"labels.txt"),"w+") as labels_file:
-            labels_file.writelines([labels[i] for i in c.train_labels])
-        with open(os.path.join(Cifar10Input.get_bitmap_directory(False),"labels.txt"),"w+") as labels_file:
-            labels_file.writelines([labels[i] for i in c.test_labels])
+        ensure_directory(bitmap_directory)
+        for i, img_array in enumerate(image_set):
+            img_path = os.path.join(bitmap_directory,str(i)+".bmp")
+            img = Image.fromarray((img_array * 255).astype('uint8'))
+            img.save(img_path,'bmp')
+        with open(os.path.join(bitmap_directory,"labels.txt"),"w+") as labels_file:
+            labels_file.writelines([labels[i] for i in labels_set])
 
     @staticmethod
     def get_labels(path=None):

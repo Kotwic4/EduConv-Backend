@@ -225,7 +225,7 @@
   #### method
   GET
   #### params:
-  dataset=[train|test]
+  imageset=[train|test]
   #### returns
   image as bmp file
   
@@ -234,7 +234,7 @@
   #### method
   GET
   #### params:
-  dataset=[train|test]
+  imageset=[train|test]
   #### returns
   ```
   {

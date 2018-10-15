@@ -75,17 +75,13 @@ def get_datasets():
 
 @app.route('/data/<dataset_id>/bitmaps/<int:image_no>')
 def get_bitmap(dataset_id, image_no):
-    dataset = request.args['dataset']
-    if dataset is None:
-        dataset = "test"
+    dataset = request.args['imageset']
     is_train_dataset = True if dataset=="train" else False
     return DatasetController.get_bitmap(dataset_id, image_no,is_train_dataset)
 
 @app.route('/data/<dataset_id>/label/<int:image_no>')
 def get_label(dataset_id, image_no):
-    dataset = request.args['dataset']
-    if dataset is None:
-        dataset = "test"
+    dataset = request.args['imageset']
     is_train_dataset = True if dataset=="train" else False
     return DatasetController.get_label(dataset_id, image_no, is_train_dataset) 
 
