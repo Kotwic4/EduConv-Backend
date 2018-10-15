@@ -42,6 +42,6 @@ class MnistInput:
     @staticmethod
     def get_label(image_no, train_dataset=False):
         bitmap_path = MnistInput.get_bitmap_directory(train_dataset)
-        bitmap_path = path.join(path,"labels.txt")
-        with open(path,"r") as f:
+        bitmap_path = path.join(bitmap_path,"labels.txt")
+        with open(bitmap_path,"r") as f:
             return f.readline().split(' ')[image_no]
