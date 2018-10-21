@@ -129,7 +129,7 @@
     "dataset": {
         "id": id,
         "name":name,
-        "train_images_count": files_trained_trained_modelControllerto_dictnumber,
+        "train_images_count": train_images_count,
         "test_images_count": files_number,
         "img_width": pixel_number,
         "img_height": pixel_number,
