@@ -3,7 +3,7 @@ import os
 import pickle
 import tarfile
 from urllib import request
-
+from os import path
 import keras.backend as keras_b
 import numpy
 from PIL import Image
@@ -54,6 +54,9 @@ class Cifar10Input:
         self.x_test /= 255
         self.y_train = np_utils.to_categorical(labels, 10)
         self.y_test = np_utils.to_categorical(test_labels, 10)
+        self.train_labels = labels
+        self.test_labels=test_labels
+        
 
     @staticmethod
     def acquire(db, path=None):
@@ -75,17 +78,20 @@ class Cifar10Input:
                                 ["cifar-10", 50000, 10000, 32, 32, 3,
                                  str(json.dumps(Cifar10Input.get_labels(path)))])
             db.commit()
+        c = Cifar10Input()
+        Cifar10Input.save_images(c.x_train,c.train_labels,Cifar10Input.get_bitmap_directory(True))
+        Cifar10Input.save_images(c.x_test,c.test_labels,Cifar10Input.get_bitmap_directory(False))
 
     @staticmethod
-    def get_bitmap(image_no):
-        batch_no = image_no // 10000 + 1
-        image_in_batch = image_no % 10000
-        data_batch = unpickle(DEFAULT_PATH + "data_batch_" + str(batch_no))
-        image_np_array = data_batch[b'data'].reshape(10000, 3, 32, 32)[image_in_batch]
-        numpy.swapaxes(numpy.swapaxes(image_np_array, 0, 1), 1, 2)
-        image = Image.fromarray((numpy.swapaxes(numpy.swapaxes(image_np_array, 0, 1), 1, 2) * 255).astype('uint8'),
-                                'RGB')
-        return image
+    def save_images(image_set, labels_set, bitmap_directory):
+        labels = Cifar10Input.get_labels()
+        ensure_directory(bitmap_directory)
+        for i, img_array in enumerate(image_set):
+            img_path = os.path.join(bitmap_directory,str(i)+".bmp")
+            img = Image.fromarray((img_array * 255).astype('uint8'))
+            img.save(img_path,'bmp')
+        with open(os.path.join(bitmap_directory,"labels.txt"),"w+") as labels_file:
+            labels_file.writelines([labels[i]+" " for i in labels_set])
 
     @staticmethod
     def get_labels(path=None):
@@ -95,3 +101,24 @@ class Cifar10Input:
             path = DEFAULT_PATH
         meta_data = unpickle(path + "batches.meta")
         return [label.decode() for label in meta_data[b'label_names']]
+
+    @staticmethod
+    def get_bitmap_directory(train_dataset=False):
+        if train_dataset:
+            return "db/datasets/Cifar-10/train/"
+        return "db/datasets/Cifar-10/test/"
+
+    @staticmethod
+    def get_label(image_no, train_dataset=False):
+        bitmap_path = Cifar10Input.get_bitmap_directory(train_dataset)
+        bitmap_path = path.join(bitmap_path,"labels.txt")
+        with open(bitmap_path,"r") as f:
+            print(image_no)
+            line = f.readline()
+            print(len(line.split(' ')))
+            print(line.split(' '))
+            return line.split(' ')[image_no]
+
+def ensure_directory(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)

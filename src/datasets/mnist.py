@@ -2,7 +2,7 @@ import keras
 import keras.backend as K
 from PIL import Image
 from keras.datasets import mnist
-
+from os import path
 
 class MnistInput:
     def __init__(self):
@@ -34,11 +34,14 @@ class MnistInput:
         self.y_test = keras.utils.to_categorical(self.y_test, self.num_classes)
 
     @staticmethod
-    def get_bitmap(image_no, from_train_dataset=False):
-        (x_train, y_train), (x_test, y_test) = mnist.load_data()
-        if from_train_dataset:
-            data = x_train
-        else:
-            data = x_test
-        image_array = data.reshape(data.shape[0], 28, 28)[image_no].astype('uint8')
-        return Image.fromarray(image_array, 'L')
+    def get_bitmap_directory(train_dataset=False):
+        if train_dataset:    
+            return "db/datasets/mnist/train/"
+        return "db/datasets/mnist/test/"
+
+    @staticmethod
+    def get_label(image_no, train_dataset=False):
+        bitmap_path = MnistInput.get_bitmap_directory(train_dataset)
+        bitmap_path = path.join(bitmap_path,"labels.txt")
+        with open(bitmap_path,"r") as f:
+            return f.readline().split(' ')[image_no]

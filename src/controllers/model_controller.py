@@ -4,7 +4,7 @@ from flask import send_from_directory, jsonify
 
 from src.datasets.datasets_map import check_if_dataset_class_exists
 from src.exceptions.invalid_usage import InvalidUsage
-from src.models.db_models import Scheme, Model, Dataset
+from src.models.db_models import Scheme, NNModel, Dataset
 from src.train.keras_model_creator import KerasModelBuilder
 
 
@@ -16,7 +16,7 @@ class ModelController:
 
     @staticmethod
     def _create_model(scheme, dataset):
-        model = Model()
+        model = NNModel()
         model.scheme = scheme
         model.dataset = dataset
         model.epochs_learnt = 0
@@ -26,7 +26,7 @@ class ModelController:
 
     @staticmethod
     def _get_model(model_no):
-        model = Model.select().where(Model.id == model_no).get()
+        model = NNModel.select().where(NNModel.id == model_no).get()
         if model is None:
             raise InvalidUsage("Model not found", status_code=404)
         return model
@@ -53,7 +53,7 @@ class ModelController:
         thread = threading.Thread(target=KerasModelBuilder.build, args=(builder, dir_path))
         thread.daemon = True  # Daemonize thread
         thread.start()  # Start the execution
-        return model.get_id()
+        return jsonify(model.to_dict())
 
     @staticmethod
     def get_model_info(model_no):
@@ -61,7 +61,7 @@ class ModelController:
 
     @staticmethod
     def get_models():
-        models = Model.select()
+        models = NNModel.select()
         return jsonify([model.to_dict() for model in models])
 
     @staticmethod
