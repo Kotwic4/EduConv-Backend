@@ -15,6 +15,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 @app.route('/scheme', methods=['POST'])
 def put_scheme():
     body = request.get_json()
+    print(body)
     return SchemeController.put_scheme(body)
 
 
@@ -46,7 +47,7 @@ def get_models():
 @app.route('/model', methods=['POST'])
 def train_model():
     body = request.get_json()
-    return jsonify(ModelController.train_model(body)), 200
+    return ModelController.train_model(body), 200
 
 
 @cross_origin()

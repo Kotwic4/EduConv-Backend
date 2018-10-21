@@ -3,7 +3,7 @@ import os
 import pickle
 import tarfile
 from urllib import request
-
+from os import path
 import keras.backend as keras_b
 import numpy
 from PIL import Image
@@ -91,7 +91,7 @@ class Cifar10Input:
             img = Image.fromarray((img_array * 255).astype('uint8'))
             img.save(img_path,'bmp')
         with open(os.path.join(bitmap_directory,"labels.txt"),"w+") as labels_file:
-            labels_file.writelines([labels[i] for i in labels_set])
+            labels_file.writelines([labels[i]+" " for i in labels_set])
 
     @staticmethod
     def get_labels(path=None):
@@ -107,6 +107,17 @@ class Cifar10Input:
         if train_dataset:
             return "db/datasets/Cifar-10/train/"
         return "db/datasets/Cifar-10/test/"
+
+    @staticmethod
+    def get_label(image_no, train_dataset=False):
+        bitmap_path = Cifar10Input.get_bitmap_directory(train_dataset)
+        bitmap_path = path.join(bitmap_path,"labels.txt")
+        with open(bitmap_path,"r") as f:
+            print(image_no)
+            line = f.readline()
+            print(len(line.split(' ')))
+            print(line.split(' '))
+            return line.split(' ')[image_no]
 
 def ensure_directory(directory):
     if not os.path.exists(directory):
