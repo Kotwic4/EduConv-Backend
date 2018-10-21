@@ -10,16 +10,20 @@
   #### body
   ```
   {
-    "layers":[
-      {
-        "layer_name":layername,
-        "args":{
-          arg_name:arg_balue,
-          ...
-        }
-      },
-      ...
-    ]
+    "name": "scheme name"
+    "scheme_json":
+    {
+      "layers":[
+        {
+          "layer_name":layername,
+          "args":{
+            arg_name:arg_balue,
+            ...
+          }
+        },
+        ...
+      ]
+    }
   }
   ```
   #### returns
@@ -27,6 +31,7 @@
   {
       "id":schema_id
       "scheme_json":input.json (as it was sent)
+      "name": "scheme name"
   },
   ```
   ### get all schema
@@ -42,6 +47,7 @@
   {
       "id":schema_id
       "scheme_json":input.json (as it was sent)
+      "name": "scheme name"
   },
   ```
   ### get all schema
@@ -58,6 +64,7 @@
     {
       "id":schema_id
       "scheme_json":input.json (as it was sent)
+      "name": "scheme name"
     },
     ...
   ]
@@ -75,18 +82,37 @@
   {
     "scheme_id":schema_id,
     "dataset":"dataset_name",
-    "epochs":epochs_number,
-    "batch_size":batch_size_number
+    "name":"model name",
+    "params":
+    {
+      "epochs":epochs_number,
+      "batch_size":batch_size_number
+    }
   }
   ```
   #### returns
   ```
   {
-    "id":model_id
-    "dataset":"dataset_name",
-    "epochs_learnt":"epochs_number",
-    "epochs_to_learn":"epochs_number",
-  }
+    "dataset": {
+        "id": datasset_id,
+        "img_depth": number_of_colors,
+        "img_height": img_height,
+        "img_width": img_width,
+        "labels": [
+            "list",
+            "of",
+            "possible",
+            "labels"
+        ],
+        "name": "dataset name",
+        "test_images_count": test_images_count,
+        "train_images_count": train_images_count
+    },
+    "epochs_learnt": epochs_learnt,
+    "epochs_to_learn": epochs_to_learn,
+    "id": id,
+    "name": "model name"
+}
   ```
   ### get model info
   #### url
@@ -98,12 +124,13 @@
   #### returns
   ```
   {
-    "id":model_id
+    "id":model_id,
+    "name":"model name",
     "dataset": {
         "id": id,
         "name":name,
-        "train_images_count": files_numer,
-        "test_images_count": files_numer,
+        "train_images_count": files_number,
+        "test_images_count": files_number,
         "img_width": pixel_number,
         "img_height": pixel_number,
         "img_depth": channels_number,
@@ -114,8 +141,8 @@
           ...
          ]
       },
-    "epochs_learnt":"epochs_number",
-    "epochs_to_learn":"epochs_number",
+    "epochs_learnt":epochs_number,
+    "epochs_to_learn":epochs_number,
   }
   ```
   ### get model list
@@ -129,7 +156,8 @@
   ```
   [
     {
-      "id":model_id
+      "id":model_id,
+      "name":"model name"
       "dataset": {
         "id": id,
         "name":name,

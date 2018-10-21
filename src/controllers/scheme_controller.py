@@ -18,7 +18,8 @@ class SchemeController:
     @staticmethod
     def put_scheme(body):
         new_scheme = Scheme()
-        new_scheme.scheme_json = json.dumps(body)
+        new_scheme.scheme_json = json.dumps(body["scheme_json"])
+        new_scheme.name = body.get("name")
         new_scheme.save()
         return jsonify(new_scheme.to_dict())
 
