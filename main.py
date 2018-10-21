@@ -15,6 +15,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 @app.route('/scheme', methods=['POST'])
 def put_scheme():
     body = request.get_json()
+    print(body)
     return SchemeController.put_scheme(body)
 
 
@@ -75,14 +76,21 @@ def get_datasets():
 
 @app.route('/data/<dataset_id>/bitmaps/<int:image_no>')
 def get_bitmap(dataset_id, image_no):
-    return DatasetController.get_bitmap(dataset_id, image_no)
+    dataset = request.args['imageset']
+    is_train_dataset = dataset=="train" 
+    return DatasetController.get_bitmap(dataset_id, image_no,is_train_dataset)
+
+@app.route('/data/<dataset_id>/label/<int:image_no>')
+def get_label(dataset_id, image_no):
+    dataset = request.args['imageset']
+    is_train_dataset = dataset=="train" 
+    return DatasetController.get_label(dataset_id, image_no, is_train_dataset) 
 
 
 @app.route('/data/<int:dataset_id>/')
 def get_dataset_info(dataset_id):
     return DatasetController.get_dataset_info(dataset_id)
-
-
+    
 @app.errorhandler(InvalidUsage)
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())

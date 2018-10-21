@@ -51,7 +51,7 @@ class Scheme(BaseModel):
         return {"id": self.get_id(), "scheme_json": json.loads(self.scheme_json)}
 
 
-class Model(BaseModel):
+class NNModel(BaseModel):
     dataset = ForeignKeyField(column_name='dataset_id', field='id', model=Dataset, null=True)
     epochs_learnt = IntegerField(constraints=[SQL("DEFAULT 0")], null=True)
     epochs_to_learn = IntegerField(constraints=[SQL("DEFAULT 0")], null=True)
