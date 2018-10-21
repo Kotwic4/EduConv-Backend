@@ -1,74 +1,37 @@
-import threading
+import json
 
-from flask import send_from_directory, jsonify
+from flask import jsonify
 
-from src.datasets.datasets_map import check_if_dataset_class_exists
 from src.exceptions.invalid_usage import InvalidUsage
-from src.models.db_models import Scheme, NNModel, Dataset
-from src.train.keras_model_creator import KerasModelBuilder
+from src.models.db_models import Model
 
 
 class ModelController:
 
     @staticmethod
-    def _model_path(model):
-        return "db/models/" + str(model.get_id())
-
-    @staticmethod
-    def _create_model(scheme, dataset, name=None):
-        model = NNModel()
-        model.scheme = scheme
-        model.dataset = dataset
-        model.epochs_learnt = 0
-        model.epochs_to_learn = 0
-        model.save()
-        model.name = name
-        return model
-
-    @staticmethod
     def _get_model(model_no):
-        model = NNModel.select().where(NNModel.id == model_no).get()
+        model = Model.select().where(Model.id == model_no).get()
         if model is None:
-            raise InvalidUsage("Model not found", status_code=404)
+            raise InvalidUsage("model not found", status_code=404)
         return model
 
     @staticmethod
-    def train_model(body):
-        if "dataset" not in body.keys():
-            raise InvalidUsage("no dataset specified in request")
-
-        scheme_id = body["scheme_id"]
-        dataset_name = body["dataset"]
-        name = body.get("name") #None if not found in json
-        params = body["params"]
-        scheme = Scheme.select().where(Scheme.id == scheme_id).get()
-
-        dataset = Dataset.select().where(Dataset.name == dataset_name).get()
-        dataset_class = check_if_dataset_class_exists(dataset_name)
-
-        model = ModelController._create_model(scheme, dataset, name)
-
-        builder = KerasModelBuilder(dataset=dataset_class(), db_model=model, **params)
-        dir_path = ModelController._model_path(model)
-        thread = threading.Thread(target=KerasModelBuilder.build, args=(builder, dir_path))
-        thread.daemon = True  # Daemonize thread
-        thread.start()  # Start the execution
-        return jsonify(model.to_dict())
+    def put_model(body):
+        new_model = Model()
+        new_model.model_json = json.dumps(body["model_json"])
+        new_model.name = body.get("name")
+        new_model.save()
+        return jsonify(new_model.to_dict())
 
     @staticmethod
     def get_model_info(model_no):
-        return jsonify(ModelController._get_model(model_no).to_dict())
+        model = ModelController._get_model(model_no)
+        return jsonify(model.to_dict())
 
     @staticmethod
     def get_models():
-        models = NNModel.select()
+        models = Model.select()
         return jsonify([model.to_dict() for model in models])
-
-    @staticmethod
-    def get_trained_model(model_no, filename):
-        model = ModelController._get_model(model_no)
-        dir_path = ModelController._model_path(model)
-        return send_from_directory(dir_path, filename)
 
     @staticmethod
     def delete_model(model_no):

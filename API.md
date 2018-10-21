@@ -1,17 +1,17 @@
 # API
-  ## scheme
-  ### create new scheme
+  ## model
+  ### create new model
   #### url
   ```
-  /scheme
+  /model
   ```
   #### method
   POST
   #### body
   ```
   {
-    "name": "scheme name"
-    "scheme_json":
+    "name": "model name"
+    "model_json":
     {
       "layers":[
         {
@@ -30,14 +30,14 @@
   ```
   {
       "id":schema_id
-      "scheme_json":input.json (as it was sent)
-      "name": "scheme name"
+      "model_json":input.json (as it was sent)
+      "name": "model name"
   },
   ```
   ### get all schema
   #### url
   ```
-  /scheme/<schema_id>
+  /model/<schema_id>
   ```
   #### method
   GET
@@ -46,14 +46,14 @@
   ```
   {
       "id":schema_id
-      "scheme_json":input.json (as it was sent)
-      "name": "scheme name"
+      "model_json":input.json (as it was sent)
+      "name": "model name"
   },
   ```
   ### get all schema
   #### url
   ```
-  /scheme
+  /model
   ```
   #### method
   GET
@@ -63,26 +63,26 @@
   [
     {
       "id":schema_id
-      "scheme_json":input.json (as it was sent)
-      "name": "scheme name"
+      "model_json":input.json (as it was sent)
+      "name": "model name"
     },
     ...
   ]
   ```
-  ## model
-  ### create new model and start training
+  ## trained_model
+  ### create new trained_model and start training
   #### url 
   ```
-  /model
+  /trained_model
   ```
   #### method
   POST
   #### body
   ```
   {
-    "scheme_id":schema_id,
+    "model_id":schema_id,
     "dataset":"dataset_name",
-    "name":"model name",
+    "name":"trained_model name",
     "params":
     {
       "epochs":epochs_number,
@@ -111,25 +111,25 @@
     "epochs_learnt": epochs_learnt,
     "epochs_to_learn": epochs_to_learn,
     "id": id,
-    "name": "model name"
+    "name": "trained_model name"
 }
   ```
-  ### get model info
+  ### get trained_model info
   #### url
   ```
-  /model/<model_id>
+  /trained_model/<trained_model_id>
   ```
   #### method
   GET
   #### returns
   ```
   {
-    "id":model_id,
-    "name":"model name",
+    "id":trained_model_id,
+    "name":"trained_model name",
     "dataset": {
         "id": id,
         "name":name,
-        "train_images_count": files_number,
+        "train_images_count": files_trained_trained_modelControllerto_dictnumber,
         "test_images_count": files_number,
         "img_width": pixel_number,
         "img_height": pixel_number,
@@ -145,10 +145,10 @@
     "epochs_to_learn":epochs_number,
   }
   ```
-  ### get model list
+  ### get trained_model list
   #### url
   ```
-  /model
+  /trained_model
   ```
   #### method
   GET
@@ -156,8 +156,8 @@
   ```
   [
     {
-      "id":model_id,
-      "name":"model name"
+      "id":trained_model_id,
+      "name":"trained_model name"
       "dataset": {
         "id": id,
         "name":name,
@@ -179,19 +179,19 @@
     ...
   ]
   ```
-  ### get model list
+  ### get trained_model list
   #### url
   ```
-  /model/<model_id>/file/<filename>
+  /trained_model/<trained_model_id>/file/<filename>
   ```
   #### method 
   GET
   #### returns
-  file with given filename from model files
+  file with given filename from trained_model files
   
   ## datasets
   
-  ### create new scheme
+  ### create new model
   #### url
   ```
   /data/<dataset_id>

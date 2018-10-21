@@ -2,8 +2,8 @@ from flask import Flask, request, jsonify, g
 from flask_cors import CORS, cross_origin
 
 from src.controllers.dataset_controller import DatasetController
+from src.controllers.trained_model_controller import trained_ModelController
 from src.controllers.model_controller import ModelController
-from src.controllers.scheme_controller import SchemeController
 from src.exceptions.invalid_usage import InvalidUsage
 
 app = Flask(__name__)
@@ -12,42 +12,11 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 @cross_origin()
-@app.route('/scheme', methods=['POST'])
-def put_scheme():
+@app.route('/model', methods=['POST'])
+def put_model():
     body = request.get_json()
     print(body)
-    return SchemeController.put_scheme(body)
-
-
-@cross_origin()
-@app.route('/scheme/<int:scheme_no>', methods=['GET'])
-def get_scheme_info(scheme_no):
-    return SchemeController.get_scheme_info(scheme_no)
-
-
-@cross_origin()
-@app.route('/scheme/<int:scheme_no>', methods=['DELETE'])
-def delete_scheme(scheme_no):
-    return SchemeController.delete_scheme(scheme_no)
-
-
-@cross_origin()
-@app.route('/scheme', methods=['GET'])
-def get_schemes():
-    return SchemeController.get_schemes()
-
-
-@cross_origin()
-@app.route('/model', methods=['GET'])
-def get_models():
-    return ModelController.get_models()
-
-
-@cross_origin()
-@app.route('/model', methods=['POST'])
-def train_model():
-    body = request.get_json()
-    return ModelController.train_model(body), 200
+    return ModelController.put_model(body)
 
 
 @cross_origin()
@@ -63,9 +32,40 @@ def delete_model(model_no):
 
 
 @cross_origin()
-@app.route('/model/<int:model_no>/file/<filename>', methods=['GET'])
-def get_trained_model(model_no, filename):
-    return ModelController.get_trained_model(model_no, filename)
+@app.route('/model', methods=['GET'])
+def get_models():
+    return ModelController.get_models()
+
+
+@cross_origin()
+@app.route('/trained_model', methods=['GET'])
+def get_trained_models():
+    return trained_ModelController.get_trained_models()
+
+
+@cross_origin()
+@app.route('/trained_model', methods=['POST'])
+def train_trained_model():
+    body = request.get_json()
+    return trained_ModelController.train_trained_model(body), 200
+
+
+@cross_origin()
+@app.route('/trained_model/<int:trained_model_no>', methods=['GET'])
+def get_trained_model_info(trained_model_no):
+    return trained_ModelController.get_trained_model_info(trained_model_no)
+
+
+@cross_origin()
+@app.route('/trained_model/<int:trained_model_no>', methods=['DELETE'])
+def delete_trained_model(trained_model_no):
+    return trained_ModelController.delete_trained_model(trained_model_no)
+
+
+@cross_origin()
+@app.route('/trained_model/<int:trained_model_no>/file/<filename>', methods=['GET'])
+def get_trained_trained_model(trained_model_no, filename):
+    return trained_ModelController.get_trained_trained_model(trained_model_no, filename)
 
 
 @cross_origin()
