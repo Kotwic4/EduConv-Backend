@@ -47,7 +47,7 @@ def get_models():
 @app.route('/model', methods=['POST'])
 def train_model():
     body = request.get_json()
-    return ModelController.train_model(body)
+    return ModelController.train_model(body), 200
 
 
 @cross_origin()
