@@ -56,9 +56,16 @@ def get_trained_model_info(trained_model_no):
 
 
 @cross_origin()
+<<<<<<< HEAD
 @app.route('/trained_model/<int:trained_model_no>', methods=['DELETE'])
 def delete_trained_model(trained_model_no):
     return trained_ModelController.delete_trained_model(trained_model_no)
+=======
+@app.route('/model/<int:model_no>', methods=['DELETE'])
+def delete_model(model_no):
+    ModelController.delete_model(model_no)
+    return "{}",200
+>>>>>>> ReturnSthElseThan500
 
 
 @cross_origin()

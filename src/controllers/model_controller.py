@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 import json
+=======
+import shutil
+import threading
+import time
+from os import path
+>>>>>>> ReturnSthElseThan500
 
 from flask import jsonify
 
@@ -43,4 +50,5 @@ class ModelController:
     @staticmethod
     def delete_model(model_no):
         model = ModelController._get_model(model_no)
+        shutil.rmtree(ModelController._model_path(model))
         model.delete_instance()
