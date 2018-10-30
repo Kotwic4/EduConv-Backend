@@ -54,14 +54,6 @@ def train_trained_model():
 def get_trained_model_info(trained_model_no):
     return trained_ModelController.get_trained_model_info(trained_model_no)
 
-
-@cross_origin()
-@app.route('/model/<int:model_no>', methods=['DELETE'])
-def delete_model(model_no):
-    ModelController.delete_model(model_no)
-    return "{}",200
-
-
 @cross_origin()
 @app.route('/trained_model/<int:trained_model_no>/file/<filename>', methods=['GET'])
 def get_trained_trained_model(trained_model_no, filename):

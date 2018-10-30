@@ -14,7 +14,7 @@ class ModelController:
 
     @staticmethod
     def _get_model(model_no):
-        model = NNModel.select().where(NNModel.id == model_no).get()
+        model = NNModel.get_or_none(NNModel.id == model_no)
         if model is None:
             raise InvalidUsage("model not found", status_code=404)
         return model

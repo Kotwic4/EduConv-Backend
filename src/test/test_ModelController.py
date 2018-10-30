@@ -65,7 +65,7 @@ class test_api(unittest.TestCase):
       self.models[1].save()
       response = self.client.get(str.format("/model/{}",self.models[1].get_id()))
       response_dict = response.get_json()
-      assert response_dict["model_json"]=={"value1": "aaa"}
+      assert response_dict["model_json"]=={"model1": "model1"}
 
   def test_train_model_incorrect_json(self):
       response = self.client.get("/trained_model",json="""{"}""")
