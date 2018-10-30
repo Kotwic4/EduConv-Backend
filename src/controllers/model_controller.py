@@ -1,11 +1,8 @@
-<<<<<<< HEAD
 import json
-=======
 import shutil
 import threading
 import time
 from os import path
->>>>>>> ReturnSthElseThan500
 
 from flask import jsonify
 
