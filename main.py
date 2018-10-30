@@ -15,7 +15,6 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 @app.route('/model', methods=['POST'])
 def put_model():
     body = request.get_json()
-    print(body)
     return ModelController.put_model(body)
 
 

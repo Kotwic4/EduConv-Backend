@@ -18,8 +18,15 @@ class ModelController:
     @staticmethod
     def put_model(body):
         new_model = NNModel()
-        new_model.model_json = json.dumps(body["model_json"])
-        new_model.name = body.get("name")
+        try:
+            body_dict = json.loads(body)
+        except:
+            raise InvalidUsage("Sent body is not a valid JSON object",status_code=400)
+        try:
+            new_model.model_json = json.dumps(body_dict.get("model_json"))
+        except:
+            raise InvalidUsage("There is no model_json in sent model",status_code=400)
+        new_model.name = body_dict.get("name","")
         new_model.save()
         return jsonify(new_model.to_dict())
 
