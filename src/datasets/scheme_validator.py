@@ -89,10 +89,7 @@ class SchemeValidator:
         if conds['was_flatten']:
             errors.append('There can be only one flatten in scheme')
         for arg in args:
-            value = args[arg]
-            switcher = {
-            }
-            switcher.get(arg, lambda: errors.append(f'Unknown property: {arg} for flatten layer'))()
+            errors.append(f'Unknown property: {arg} for flatten layer')
         conds['was_flatten'] = True
         if len(errors) != 0:
             return errors
@@ -248,9 +245,9 @@ class SchemeValidator:
 
         for i in range(layers_size):
             layer = layers[i]
-            error = SchemeValidator.validate_layer(layer, conds)
-            if error:
-                errors[i] = error
+            layer_errors = SchemeValidator.validate_layer(layer, conds)
+            if layer_errors:
+                errors[i] = layer_errors
 
         last_index = layers_size - 1
         if not conds['was_dense']:
