@@ -179,7 +179,7 @@
     ...
   ]
   ```
-  ### get trained_model list
+  ### get trained_model file
   #### url
   ```
   /trained_model/<trained_model_id>/file/<filename>

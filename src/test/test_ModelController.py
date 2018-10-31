@@ -43,9 +43,9 @@ class test_api(unittest.TestCase):
   def test_get_models(self):
       self.models[0].save()
       self.models[1].save()
-      response = self.client.get(f'/model/{self.models[1].id}')
+      response = self.client.get(f'/model')
       models = response.get_json()
-      assert len(models)==2
+      self.assertEqual(len(models),2)
       assert models
 
 
@@ -65,18 +65,18 @@ class test_api(unittest.TestCase):
       self.models[1].save()
       response = self.client.get(str.format("/model/{}",self.models[1].get_id()))
       response_dict = response.get_json()
-      assert response_dict["model_json"]=={"model1": "model1"}
+      assert response_dict["model_json"]=={"model2": "model2"}
 
   def test_train_model_incorrect_json(self):
-      response = self.client.get("/trained_model",json="""{"}""")
+      response = self.client.post("/trained_model",json="""{"}""")
       assert response.status_code==400
 
   def test_train_model_no_json(self):
-      response = self.client.get("/trained_model")
+      response = self.client.post("/trained_model")
       assert response.status_code==400
 
   def test_train_model_no_dataset(self):
-      response = self.client.get("/trained_model",json="""{
+      response = self.client.post("/trained_model",json="""{
       "model_id":1,
       "name":"trained_model name",
       "params":
@@ -88,7 +88,7 @@ class test_api(unittest.TestCase):
       assert response.status_code==400
 
   def test_train_model_no_params(self):
-      response = self.client.get("/trained_model",json="""{
+      response = self.client.post("/trained_model",json="""{
       "model_id":1,
       "dataset":"Mnist",
       "name":"trained_model name",
@@ -96,7 +96,7 @@ class test_api(unittest.TestCase):
       assert response.status_code==400
 
   def test_train_model_no_model_id(self):
-      response = self.client.get("/trained_model",json="""{
+      response = self.client.post("/trained_model",json="""{
       "dataset":"dataset_name",
       "name":"trained_model name",
       "params":
@@ -106,4 +106,3 @@ class test_api(unittest.TestCase):
       }
     }""")
       assert response.status_code==400
-

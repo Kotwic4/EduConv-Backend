@@ -34,13 +34,18 @@ class trained_ModelController:
 
     @staticmethod
     def train_trained_model(body):
+        raise InvalidUsage('At least one of param is missing in given json (from [model_id, dataset, params])',status_code=400)
         if "dataset" not in body.keys():
             raise InvalidUsage("no dataset specified in request")
-
-        model_id = body["model_id"]
-        dataset_name = body["dataset"]
-        name = body.get("name") #None if not found in json
-        params = body["params"]
+        try:
+            model_id = body["model_id"]
+            dataset_name = body["dataset"]
+            name = body.get("name") #None if not found in json
+            params = body["params"]
+        
+        except:
+            raise InvalidUsage('At least one of param is missing in given json (from [model_id, dataset, params])',status_code=400)
+        
         model = NNModel.select().where(NNModel.id == model_id).get()
 
         dataset = Dataset.select().where(Dataset.name == dataset_name).get()
