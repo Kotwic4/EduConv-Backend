@@ -116,7 +116,7 @@ class SchemeValidator:
         errors = []
         if not conds['was_flatten']:
             errors.append('Dense layers can only be after flatten')
-        if not set(args.keys).issuperset(['units']):
+        if not set(args.keys()).issuperset(['units']):
             errors.append('Dense layers must have units')
         for arg in args:
             value = args[arg]
