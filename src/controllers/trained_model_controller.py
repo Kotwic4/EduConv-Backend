@@ -48,7 +48,7 @@ class trained_ModelController:
 
         trained_model = trained_ModelController._create_trained_model(model, dataset, name)
 
-        builder = KerasModelBuilder(dataset=dataset_class(), db_trained_model=trained_model, **params)
+        builder = KerasModelBuilder(dataset=dataset_class(), db_model=trained_model, **params)
         dir_path = trained_ModelController._trained_model_path(trained_model)
         thread = threading.Thread(target=KerasModelBuilder.build, args=(builder, dir_path))
         thread.daemon = True  # Daemonize thread
