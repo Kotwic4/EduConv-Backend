@@ -6,8 +6,6 @@ from src.datasets.datasets_map import check_if_dataset_class_exists
 def start_training():
     while(True):
         queue = ModelsQueue.get_or_none()
-        print('xD')
-        print(queue)
         if queue is not None:
             model = queue.model_to_be_trained
             model.epochs_learnt=0
