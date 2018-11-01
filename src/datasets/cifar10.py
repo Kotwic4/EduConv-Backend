@@ -113,10 +113,7 @@ class Cifar10Input:
         bitmap_path = Cifar10Input.get_bitmap_directory(train_dataset)
         bitmap_path = path.join(bitmap_path,"labels.txt")
         with open(bitmap_path,"r") as f:
-            print(image_no)
             line = f.readline()
-            print(len(line.split(' ')))
-            print(line.split(' '))
             return line.split(' ')[image_no]
 
 def ensure_directory(directory):
