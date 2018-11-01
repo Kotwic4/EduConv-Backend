@@ -57,7 +57,7 @@ class KerasModelBuilder:
         keras.backend.clear_session()
 
     def parse_model_data(self):
-        data = json.loads(self.db_model.scheme.scheme_json)
+        data = json.loads(self.db_model.model.model_json)
         dataset = self.db_model.dataset
         data['layers'][0]['args']['input_shape'] = [dataset.img_width, dataset.img_height, dataset.img_depth]
         for layer in reversed(data['layers']):
