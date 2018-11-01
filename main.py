@@ -1,15 +1,18 @@
 from flask import Flask, request, jsonify, g
 from flask_cors import CORS, cross_origin
-
+from src.train.trainer import start_training
 from src.controllers.dataset_controller import DatasetController
 from src.controllers.trained_model_controller import trained_ModelController
 from src.controllers.model_controller import ModelController
 from src.exceptions.invalid_usage import InvalidUsage
+import threading
 
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-
+thread = threading.Thread(target=start_training) 
+thread.daemon = True  # Daemonize thread
+thread.start()  # Start the execution
 
 @cross_origin()
 @app.route('/model', methods=['POST'])

@@ -17,12 +17,6 @@ class ProgressCallback(Callback):
         self.db_model.epochs_learnt += 1
         self.db_model.save()
 
-    def on_train_begin(self, logs=None):
-        epochs = self.params["epochs"]
-        self.db_model.epochs_to_learn += epochs
-        self.db_model.save()
-
-
 class KerasModelBuilder:
     def __init__(self, dataset, db_model, epochs=1, batch_size=32):
         self.dataset = dataset

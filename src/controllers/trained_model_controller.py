@@ -1,10 +1,8 @@
-import threading
-
 from flask import send_from_directory, jsonify
 
 from src.datasets.datasets_map import check_if_dataset_class_exists
 from src.exceptions.invalid_usage import InvalidUsage
-from src.models.db_models import NNModel, NNTrainedModel, Dataset
+from src.models.db_models import NNModel, NNTrainedModel, Dataset, ModelsQueue
 from src.train.keras_model_creator import KerasModelBuilder
 
 
@@ -15,14 +13,15 @@ class trained_ModelController:
         return "db/trained_models/" + str(trained_model.get_id())
 
     @staticmethod
-    def _create_trained_model(model, dataset, name=None):
+    def _create_trained_model(model, dataset, params, name=None):
         trained_model = NNTrainedModel()
         trained_model.model = model
         trained_model.dataset = dataset
         trained_model.epochs_learnt = 0
-        trained_model.epochs_to_learn = 0
-        trained_model.save()
+        trained_model.epochs_to_learn = params['epochs']
+        trained_model.batch_size = params['batch_size']
         trained_model.name = name
+        trained_model.save()
         return trained_model
 
     @staticmethod
@@ -31,6 +30,7 @@ class trained_ModelController:
         if trained_model is None:
             raise InvalidUsage("trained_model not found", status_code=404)
         return trained_model
+
 
     @staticmethod
     def train_trained_model(body):
@@ -46,13 +46,10 @@ class trained_ModelController:
         dataset = Dataset.select().where(Dataset.name == dataset_name).get()
         dataset_class = check_if_dataset_class_exists(dataset_name)
 
-        trained_model = trained_ModelController._create_trained_model(model, dataset, name)
-
-        builder = KerasModelBuilder(dataset=dataset_class(), db_model=trained_model, **params)
-        dir_path = trained_ModelController._trained_model_path(trained_model)
-        thread = threading.Thread(target=KerasModelBuilder.build, args=(builder, dir_path))
-        thread.daemon = True  # Daemonize thread
-        thread.start()  # Start the execution
+        trained_model = trained_ModelController._create_trained_model(model, dataset, params, name)
+        mq = ModelsQueue()
+        mq.model_to_be_trained=trained_model
+        mq.save()
         return jsonify(trained_model.to_dict())
 
     @staticmethod
