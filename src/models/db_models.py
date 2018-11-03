@@ -62,14 +62,21 @@ class NNTrainedModel(BaseModel):
     epochs_to_learn = IntegerField(constraints=[SQL("DEFAULT 0")], null=True)
     model = ForeignKeyField(column_name='scheme_id', field='id', model=NNModel, null=True)
     name = TextField(null=True)
+    batch_size = IntegerField(column_name='batch_size')
     def to_dict(self):
         return {
             "id": self.get_id(),
             "dataset": self.dataset.to_dict(),
             "epochs_learnt": self.epochs_learnt,
             "epochs_to_learn": self.epochs_to_learn,
+            "batch_size": self.batch_size,
             "name": self.name
         }
 
     class Meta:
         table_name = 'trainedModels'
+
+class ModelsQueue(BaseModel):
+    model_to_be_trained = ForeignKeyField(column_name='trained_model_id', field='id', model=NNTrainedModel, null=False)
+    class Meta:
+        table_name = 'ModelsQueue'
