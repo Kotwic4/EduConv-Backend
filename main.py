@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, g
+from flask import Flask, request, jsonify, g, json
 from flask_cors import CORS, cross_origin
 
 from src.controllers.dataset_controller import DatasetController
@@ -46,7 +46,11 @@ def get_trained_models():
 @app.route('/trained_model', methods=['POST'])
 def train_trained_model():
     body = request.get_json()
-    return trained_ModelController.train_trained_model(body), 200
+    try:
+        dicted_body = json.loads(body)
+    except:
+        raise InvalidUsage("Invalid json",400)
+    return trained_ModelController.train_trained_model(dicted_body), 200
 
 
 @cross_origin()
@@ -80,7 +84,7 @@ def get_label(dataset_id, image_no):
     return DatasetController.get_label(dataset_id, image_no, is_train_dataset) 
 
 
-@app.route('/data/<int:dataset_id>/')
+@app.route('/data/<int:dataset_id>')
 def get_dataset_info(dataset_id):
     return DatasetController.get_dataset_info(dataset_id)
 
