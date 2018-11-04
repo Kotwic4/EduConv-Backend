@@ -197,7 +197,7 @@ class test_api(unittest.TestCase):
         self.assertEqual(len(actual),2)
 
     def test_get_dataset(self):
-        response = self.client.get('/data/1')
+        response = self.client.get('/data/1/')
         self.assertEqual(response.status_code,200)
         actual = response.get_json()
         self.assertIn('id',actual.keys())
@@ -224,5 +224,5 @@ class test_api(unittest.TestCase):
             self.assertIn('labels',actual[i].keys())
 
     def test_get_dataset_non_existing_id(self):
-        response = self.client.get('/data/999999')
+        response = self.client.get('/data/999999/')
         self.assertEqual(response.status_code,404)

@@ -84,7 +84,7 @@ def get_label(dataset_id, image_no):
     return DatasetController.get_label(dataset_id, image_no, is_train_dataset) 
 
 
-@app.route('/data/<int:dataset_id>')
+@app.route('/data/<int:dataset_id>/')
 def get_dataset_info(dataset_id):
     return DatasetController.get_dataset_info(dataset_id)
 

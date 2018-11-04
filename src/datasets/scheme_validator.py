@@ -100,6 +100,8 @@ class SchemeValidator:
         errors = []
         if conds['was_activation']:
             errors.append('There can be only one activation between active layers')
+        if 'activation' not in args:
+            errors.append('Activation property is mandatory in activation layer')
         for arg in args:
             value = args[arg]
             switcher = {
