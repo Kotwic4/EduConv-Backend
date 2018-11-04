@@ -110,6 +110,7 @@
     },
     "epochs_learnt": epochs_learnt,
     "epochs_to_learn": epochs_to_learn,
+    "batch_size":batch_size_number
     "id": id,
     "name": "trained_model name"
 }
@@ -143,6 +144,7 @@
       },
     "epochs_learnt":epochs_number,
     "epochs_to_learn":epochs_number,
+    "batch_size":batch_size_number
   }
   ```
   ### get trained_model list

@@ -10,7 +10,7 @@ import sqlite3
 from PIL import Image
 
 from src.datasets.cifar10 import Cifar10Input
-from src.models.db_models import Dataset, NNTrainedModel, NNModel
+from src.models.db_models import Dataset, NNTrainedModel, NNModel, ModelsQueue
 
 def ensure_directory(directory):
     if not path.exists(directory):
@@ -21,7 +21,7 @@ def init_database():
     if not os.path.exists('db'):
         os.makedirs('db')
     database = peewee.SqliteDatabase('db/db.sqlite', **{})
-    database.create_tables([NNTrainedModel, Dataset, NNModel])
+    database.create_tables([NNTrainedModel, Dataset, NNModel, ModelsQueue])
     database.close()
 
 

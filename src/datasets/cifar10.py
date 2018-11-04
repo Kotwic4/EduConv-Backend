@@ -118,7 +118,7 @@ class Cifar10Input:
             labels = line.split(' ')
             if image_no >= len(labels):
                 raise InvalidUsage("Label not found",404)
-            return line.split(' ')[image_no]
+            return labels[image_no]
 
 def ensure_directory(directory):
     if not os.path.exists(directory):
