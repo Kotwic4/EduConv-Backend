@@ -8,6 +8,7 @@ import keras.backend as keras_b
 import numpy
 from PIL import Image
 from keras.utils import np_utils
+from src.exceptions.invalid_usage import InvalidUsage
 
 DEFAULT_SHORT_PATH = "db/datasets/Cifar-10/"
 PATH_EXTENSION = "cifar-10-batches-py/"
@@ -113,10 +114,10 @@ class Cifar10Input:
         bitmap_path = Cifar10Input.get_bitmap_directory(train_dataset)
         bitmap_path = path.join(bitmap_path,"labels.txt")
         with open(bitmap_path,"r") as f:
-            print(image_no)
             line = f.readline()
-            print(len(line.split(' ')))
-            print(line.split(' '))
+            labels = line.split(' ')
+            if image_no >= len(labels):
+                raise InvalidUsage("Label not found",404)
             return line.split(' ')[image_no]
 
 def ensure_directory(directory):

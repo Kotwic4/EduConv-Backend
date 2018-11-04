@@ -3,6 +3,7 @@ import keras.backend as K
 from PIL import Image
 from keras.datasets import mnist
 from os import path
+from src.exceptions.invalid_usage import InvalidUsage
 
 class MnistInput:
     def __init__(self):
@@ -44,4 +45,8 @@ class MnistInput:
         bitmap_path = MnistInput.get_bitmap_directory(train_dataset)
         bitmap_path = path.join(bitmap_path,"labels.txt")
         with open(bitmap_path,"r") as f:
-            return f.readline().split(' ')[image_no]
+            labels = f.readline().split(' ')
+            if image_no >= len(labels):
+                raise InvalidUsage("Label not found",404)
+            return labels[image_no]
+            

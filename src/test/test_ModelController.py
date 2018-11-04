@@ -209,5 +209,20 @@ class test_api(unittest.TestCase):
         self.assertIn('img_depth',actual.keys())
         self.assertIn('labels',actual.keys())
 
-    def test_get_bitmap_non_existing_id(self):
-        pass
+    def test_get_datasets(self):
+        response = self.client.get('/data')
+        self.assertEqual(response.status_code,200)
+        actual = response.get_json()
+        for i in range(2):
+            self.assertIn('id',actual[i].keys())
+            self.assertIn('name',actual[i].keys())
+            self.assertIn('train_images_count',actual[i].keys())
+            self.assertIn('test_images_count',actual[i].keys())
+            self.assertIn('img_width',actual[i].keys())
+            self.assertIn('img_height',actual[i].keys())
+            self.assertIn('img_depth',actual[i].keys())
+            self.assertIn('labels',actual[i].keys())
+
+    def test_get_dataset_non_existing_id(self):
+        response = self.client.get('/data/999999')
+        self.assertEqual(response.status_code,404)
