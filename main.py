@@ -49,11 +49,7 @@ def get_trained_models():
 @app.route('/trained_model', methods=['POST'])
 def train_trained_model():
     body = request.get_json()
-    try:
-        dicted_body = json.loads(body)
-    except:
-        raise InvalidUsage("Invalid json",400)
-    return trained_ModelController.train_trained_model(dicted_body), 200
+    return trained_ModelController.train_trained_model(body), 200
 
 
 @cross_origin()
