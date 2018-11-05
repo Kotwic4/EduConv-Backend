@@ -10,14 +10,14 @@
   #### body
   ```
   {
-    "name": "model name"
+    "name": model_name
     "model_json":
     {
-      "layers":[
+      "layers": [
         {
-          "layer_name":layername,
+          "layer_name": layer_name,
           "args":{
-            arg_name:arg_balue,
+            arg_name: arg_value,
             ...
           }
         },
@@ -29,15 +29,15 @@
   #### returns
   ```
   {
-      "id":schema_id
-      "model_json":input.json (as it was sent)
-      "name": "model name"
+      "id": model_id
+      "model_json": input_json (as it was sent)
+      "name": model_name
   },
   ```
-  ### get all schema
+  ### get model info
   #### url
   ```
-  /model/<schema_id>
+  /model/<model_id>
   ```
   #### method
   GET
@@ -45,12 +45,12 @@
   #### returns
   ```
   {
-      "id":schema_id
-      "model_json":input.json (as it was sent)
-      "name": "model name"
+      "id": model_id
+      "model_json": input_json (as it was sent)
+      "name": model_name
   },
   ```
-  ### get all schema
+  ### get all models info
   #### url
   ```
   /model
@@ -62,9 +62,9 @@
   ```
   [
     {
-      "id":schema_id
-      "model_json":input.json (as it was sent)
-      "name": "model name"
+      "id": model_id
+      "model_json": input_json (as it was sent)
+      "name": model name
     },
     ...
   ]
@@ -80,13 +80,13 @@
   #### body
   ```
   {
-    "model_id":schema_id,
-    "dataset":"dataset_name",
-    "name":"trained_model name",
+    "model_id": model_id,
+    "dataset": dataset_name,
+    "name": trained_model_name,
     "params":
     {
-      "epochs":epochs_number,
-      "batch_size":batch_size_number
+      "epochs": epochs_number,
+      "batch_size": batch_size_number
     }
   }
   ```
@@ -99,21 +99,28 @@
         "img_height": img_height,
         "img_width": img_width,
         "labels": [
-            "list",
-            "of",
-            "possible",
-            "labels"
+            label1,
+            label2,
+            ...
         ],
-        "name": "dataset name",
+        "name": dataset_name,
         "test_images_count": test_images_count,
         "train_images_count": train_images_count
     },
     "epochs_learnt": epochs_learnt,
     "epochs_to_learn": epochs_to_learn,
-    "batch_size":batch_size_number
-    "id": id,
-    "name": "trained_model name"
-}
+    "batch_size": batch_size_number,
+    "id": trained_model_id,
+    "name": trained_model_name,
+    "model_id": model_id,
+    "epochs_data": {
+      epoch_number: {
+        "acc": acc_value,
+        "loss": loss_value,
+      }
+      ...
+    }
+  }
   ```
   ### get trained_model info
   #### url
@@ -125,26 +132,33 @@
   #### returns
   ```
   {
-    "id":trained_model_id,
-    "name":"trained_model name",
     "dataset": {
-        "id": id,
-        "name":name,
-        "train_images_count": train_images_count,
-        "test_images_count": files_number,
-        "img_width": pixel_number,
-        "img_height": pixel_number,
-        "img_depth": channels_number,
-        "labels":[
-          label_1,
-          label_2,
-          label_3,
-          ...
-         ]
-      },
-    "epochs_learnt":epochs_number,
-    "epochs_to_learn":epochs_number,
-    "batch_size":batch_size_number
+        "id": datasset_id,
+        "img_depth": number_of_colors,
+        "img_height": img_height,
+        "img_width": img_width,
+        "labels": [
+            label1,
+            label2,
+            ...
+        ],
+        "name": dataset_name,
+        "test_images_count": test_images_count,
+        "train_images_count": train_images_count
+    },
+    "epochs_learnt": epochs_learnt,
+    "epochs_to_learn": epochs_to_learn,
+    "batch_size": batch_size_number,
+    "id": trained_model_id,
+    "name": trained_model_name,
+    "model_id": model_id,
+    "epochs_data": {
+      epoch_number: {
+        "acc": acc_value,
+        "loss": loss_value,
+      }
+      ...
+    }
   }
   ```
   ### get trained_model list
@@ -157,27 +171,35 @@
   #### returns
   ```
   [
-    {
-      "id":trained_model_id,
-      "name":"trained_model name"
-      "dataset": {
-        "id": id,
-        "name":name,
-        "train_images_count": files_numer,
-        "test_images_count": files_numer,
-        "img_width": pixel_number,
-        "img_height": pixel_number,
-        "img_depth": channels_number,
-        "labels":[
-          label_1,
-          label_2,
-          label_3,
+      {
+        "dataset": {
+            "id": datasset_id,
+            "img_depth": number_of_colors,
+            "img_height": img_height,
+            "img_width": img_width,
+            "labels": [
+                label1,
+                label2,
+                ...
+            ],
+            "name": dataset_name,
+            "test_images_count": test_images_count,
+            "train_images_count": train_images_count
+        },
+        "epochs_learnt": epochs_learnt,
+        "epochs_to_learn": epochs_to_learn,
+        "batch_size": batch_size_number,
+        "id": trained_model_id,
+        "name": trained_model_name,
+        "model_id": model_id,
+        "epochs_data": {
+          epoch_number: {
+            "acc": acc_value,
+            "loss": loss_value,
+          }
           ...
-         ]
-      },
-      "epochs_learnt":"epochs_number",
-      "epochs_to_learn":"epochs_number",
-    },
+        }
+      }
     ...
   ]
   ```
@@ -258,7 +280,7 @@
   imageset=[train|test]
   #### returns
   image as bmp file
-  
+  ```
   /data/<dataset_id>/label/<image_id>
   ```
   #### method
@@ -268,6 +290,6 @@
   #### returns
   ```
   {
-     "label":label
+     "label": label
   }
   ```
