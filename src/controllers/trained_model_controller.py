@@ -34,8 +34,10 @@ class trained_ModelController:
 
     @staticmethod
     def train_trained_model(body):
-        if "dataset" not in body.keys():
-            raise InvalidUsage("no dataset specified in request")
+        if body is None:
+            raise InvalidUsage("Empty body",400)
+        if "dataset" not in body:
+            raise InvalidUsage("No dataset specified in request",400)
         try:
             model_id = body["model_id"]
             dataset_name = body["dataset"]

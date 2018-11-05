@@ -97,9 +97,10 @@ class test_api(unittest.TestCase):
         response = self.client.post("/trained_model",json="""{
         "model_id":1,
         "name":"trained_model name",
+        "dataset":"mnist",
         "params":
         {
-            "epochs":1,
+            "epochs":0,
             "batch_size":128
         }
         }""")
@@ -147,7 +148,7 @@ class test_api(unittest.TestCase):
             "name":"trained_model name",
             "params":
             {
-            "epochs":0,
+            "epochs":1,
             "batch_size":1
             }
         }"""
@@ -162,6 +163,7 @@ class test_api(unittest.TestCase):
         m.epochs_learnt=0
         m.epochs_to_learn=0
         m.name='trained_model'
+        m.batch_size=100
         m.save()
         response = self.client.get('/trained_model/1')
         actual = response.get_json()
@@ -183,6 +185,7 @@ class test_api(unittest.TestCase):
         m.epochs_learnt=0
         m.epochs_to_learn=0
         m.name='trained_model'
+        m.batch_size=100
         m.save()
         m = NNTrainedModel()
         m.model=self.models[0]
@@ -190,6 +193,7 @@ class test_api(unittest.TestCase):
         m.epochs_learnt=0
         m.epochs_to_learn=0
         m.name='trained_model2'
+        m.batch_size=100
         m.save()
         response = self.client.get('/trained_model')
         self.assertEqual(response.status_code,200)
