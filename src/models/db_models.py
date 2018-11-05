@@ -19,21 +19,15 @@ class BaseModel(Model):
 class Dataset(BaseModel):
     img_depth = IntegerField(column_name='img_depth',
                              constraints=[Check('img_depth > 0')],
-                             default=1,
-                             unique=False,
                              null=False)
     img_height = IntegerField(column_name='img_height',
                               constraints=[Check('img_height > 0')],
-                              default=1,
-                              unique=False,
                               null=False)
     img_width = IntegerField(column_name='img_width',
                              constraints=[Check('img_width > 0')],
                              default=1,
-                             unique=False,
                              null=False)
     labels = TextField(column_name='labels',
-                       unique=False,
                        null=False)
     name = TextField(column_name='name',
                      unique=True,
@@ -41,12 +35,10 @@ class Dataset(BaseModel):
     test_images_count = IntegerField(column_name='test_images_count',
                                      constraints=[Check('test_images_count >= 0')],
                                      default=0,
-                                     unique=False,
                                      null=False)
     train_images_count = IntegerField(column_name='train_images_count',
                                       constraints=[Check('train_images_count >= 0')],
                                       default=0,
-                                      unique=False,
                                       null=False)
 
     def to_dict(self):
@@ -92,25 +84,20 @@ class NNTrainedModel(BaseModel):
     epochs_learnt = IntegerField(column_name='epochs_learnt',
                                  constraints=[Check('epochs_learnt >= 0')],
                                  default=0,
-                                 unique=False,
                                  null=False)
     epochs_to_learn = IntegerField(column_name='epochs_to_learn',
                                    constraints=[Check('epochs_to_learn > 0')],
                                    default=1,
-                                   unique=False,
                                    null=False)
     model = ForeignKeyField(column_name='model_id',
                             field='id',
                             model=NNModel,
-                            unique=False,
                             null=False)
     name = TextField(column_name='name',
-                     unique=False,
                      null=True)
     batch_size = IntegerField(column_name='batch_size',
                               constraints=[Check('batch_size > 0')],
                               default=1,
-                              unique=False,
                               null=False)
 
     def to_dict(self):
@@ -142,19 +129,16 @@ class ModelEpochData(BaseModel):
     model = ForeignKeyField(column_name='trained_model_id',
                             field='id',
                             model=NNTrainedModel,
-                            unique=False,
                             null=False)
     epoch_number = IntegerField(column_name='epoch_number',
                                 constraints=[Check('epoch_number >= 0')],
-                                unique=False,
                                 null=False)
     acc = DoubleField(column_name='acc',
                       constraints=[Check('acc >= 0')],
-                      unique=False,
+
                       null=False)
     loss = DoubleField(column_name='loss',
                        constraints=[Check('loss >= 0')],
-                       unique=False,
                        null=False)
 
     def to_dict(self):
