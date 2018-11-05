@@ -113,13 +113,14 @@
     "id": trained_model_id,
     "name": trained_model_name,
     "model_id": model_id,
-    "epochs_data": {
-      epoch_number: {
+    "epochs_data": [
+      {
         "acc": acc_value,
         "loss": loss_value,
-      }
+        "epoch_number": epoch_number,
+      },
       ...
-    }
+    ]
   }
   ```
   ### get trained_model info
@@ -152,13 +153,14 @@
     "id": trained_model_id,
     "name": trained_model_name,
     "model_id": model_id,
-    "epochs_data": {
-      epoch_number: {
+    "epochs_data": [
+      {
         "acc": acc_value,
         "loss": loss_value,
-      }
+        "epoch_number": epoch_number,
+      },
       ...
-    }
+    ]
   }
   ```
   ### get trained_model list
@@ -192,13 +194,14 @@
         "id": trained_model_id,
         "name": trained_model_name,
         "model_id": model_id,
-        "epochs_data": {
-          epoch_number: {
+        "epochs_data": [
+          {
             "acc": acc_value,
             "loss": loss_value,
-          }
+            "epoch_number": epoch_number,
+          },
           ...
-        }
+        ]
       }
     ...
   ]

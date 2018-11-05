@@ -125,10 +125,9 @@ class NNTrainedModel(BaseModel):
     def epochs_data(self):
         epoch_data_list = list(ModelEpochData
                                .select()
-                               .where(ModelEpochData.model == self))
-        epoch_data_dict = {}
-        for x in epoch_data_list:
-            epoch_data_dict[x.epoch_number] = x.to_dict()
+                               .where(ModelEpochData.model == self)
+                               .order_by(ModelEpochData.epoch_number))
+        epoch_data_dict = [x.to_dict() for x in epoch_data_list]
         return epoch_data_dict
 
     class Meta:
@@ -157,7 +156,8 @@ class ModelEpochData(BaseModel):
     def to_dict(self):
         return {
             "acc": self.acc,
-            "loss": self.loss
+            "loss": self.loss,
+            "epoch_number": self.epoch_number,
         }
 
     class Meta:
