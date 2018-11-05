@@ -120,7 +120,8 @@
         "epoch_number": epoch_number,
       },
       ...
-    ]
+    ],
+    "number_of_layers": number_of_layers
   }
   ```
   ### get trained_model info
@@ -160,7 +161,8 @@
         "epoch_number": epoch_number,
       },
       ...
-    ]
+    ],
+    "number_of_layers": number_of_layers
   }
   ```
   ### get trained_model list
@@ -201,7 +203,8 @@
             "epoch_number": epoch_number,
           },
           ...
-        ]
+        ],
+        "number_of_layers": number_of_layers
       }
     ...
   ]

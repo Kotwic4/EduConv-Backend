@@ -79,6 +79,9 @@ class NNModel(BaseModel):
             "name": self.name
         }
 
+    def len(self):
+        return len(json.loads(self.model_json)["layers"])
+
 
 class NNTrainedModel(BaseModel):
     dataset = ForeignKeyField(column_name='dataset_id',
@@ -119,7 +122,8 @@ class NNTrainedModel(BaseModel):
             "batch_size": self.batch_size,
             "name": self.name,
             "model_id": self.model.id,
-            "epochs_data": self.epochs_data()
+            "epochs_data": self.epochs_data(),
+            "number_of_layers": self.model.len(),
         }
 
     def epochs_data(self):
