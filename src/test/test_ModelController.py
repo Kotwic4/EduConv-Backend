@@ -97,10 +97,9 @@ class test_api(unittest.TestCase):
         response = self.client.post("/trained_model",json="""{
         "model_id":1,
         "name":"trained_model name",
-        "dataset":"mnist",
         "params":
         {
-            "epochs":0,
+            "epochs":1,
             "batch_size":128
         }
         }""")
