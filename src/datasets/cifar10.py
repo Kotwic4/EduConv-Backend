@@ -2,8 +2,9 @@ import json
 import os
 import pickle
 import tarfile
-from urllib import request
 from os import path
+from urllib import request
+
 import keras.backend as keras_b
 import numpy
 from PIL import Image
@@ -11,7 +12,8 @@ from keras.utils import np_utils
 
 DEFAULT_SHORT_PATH = "db/datasets/Cifar-10/"
 PATH_EXTENSION = "cifar-10-batches-py/"
-DEFAULT_PATH = DEFAULT_SHORT_PATH+PATH_EXTENSION
+DEFAULT_PATH = DEFAULT_SHORT_PATH + PATH_EXTENSION
+
 
 def unpickle(file):
     with open(file, 'rb') as fo:
@@ -55,8 +57,7 @@ class Cifar10Input:
         self.y_train = np_utils.to_categorical(labels, 10)
         self.y_test = np_utils.to_categorical(test_labels, 10)
         self.train_labels = labels
-        self.test_labels=test_labels
-        
+        self.test_labels = test_labels
 
     @staticmethod
     def acquire(db, path=None):
@@ -79,19 +80,19 @@ class Cifar10Input:
                                  str(json.dumps(Cifar10Input.get_labels(path)))])
             db.commit()
         c = Cifar10Input()
-        Cifar10Input.save_images(c.x_train,c.train_labels,Cifar10Input.get_bitmap_directory(True))
-        Cifar10Input.save_images(c.x_test,c.test_labels,Cifar10Input.get_bitmap_directory(False))
+        Cifar10Input.save_images(c.x_train, c.train_labels, Cifar10Input.get_bitmap_directory(True))
+        Cifar10Input.save_images(c.x_test, c.test_labels, Cifar10Input.get_bitmap_directory(False))
 
     @staticmethod
     def save_images(image_set, labels_set, bitmap_directory):
         labels = Cifar10Input.get_labels()
         ensure_directory(bitmap_directory)
         for i, img_array in enumerate(image_set):
-            img_path = os.path.join(bitmap_directory,str(i)+".bmp")
+            img_path = os.path.join(bitmap_directory, str(i) + ".bmp")
             img = Image.fromarray((img_array * 255).astype('uint8'))
-            img.save(img_path,'bmp')
-        with open(os.path.join(bitmap_directory,"labels.txt"),"w+") as labels_file:
-            labels_file.writelines([labels[i]+" " for i in labels_set])
+            img.save(img_path, 'bmp')
+        with open(os.path.join(bitmap_directory, "labels.txt"), "w+") as labels_file:
+            labels_file.writelines([labels[i] + " " for i in labels_set])
 
     @staticmethod
     def get_labels(path=None):
@@ -111,10 +112,11 @@ class Cifar10Input:
     @staticmethod
     def get_label(image_no, train_dataset=False):
         bitmap_path = Cifar10Input.get_bitmap_directory(train_dataset)
-        bitmap_path = path.join(bitmap_path,"labels.txt")
-        with open(bitmap_path,"r") as f:
+        bitmap_path = path.join(bitmap_path, "labels.txt")
+        with open(bitmap_path, "r") as f:
             line = f.readline()
             return line.split(' ')[image_no]
+
 
 def ensure_directory(directory):
     if not os.path.exists(directory):
