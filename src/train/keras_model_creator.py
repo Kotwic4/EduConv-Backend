@@ -45,7 +45,7 @@ class KerasModelBuilder:
         self.model.fit(self.dataset.x_train, self.dataset.y_train,
                        batch_size=self.batch_size,
                        epochs=self.epochs,
-                       verbose=0,
+                       verbose=1,
                        validation_data=(self.dataset.x_test, self.dataset.y_test),
                        callbacks=[ProgressCallback(db_model=self.db_model)])
         tfjs.converters.save_keras_model(self.model, path)
