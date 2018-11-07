@@ -66,6 +66,15 @@ class KerasModelBuilder:
         self.add_layers(data['layers'])
         self.train(path)
 
+    def validate(self):
+        data = self.parse_model_data()
+        try:
+            self.add_layers(data['layers'])
+            return True
+        except ValueError as err:
+            print("OS error: {0}".format(err))
+            return False
+
     def set_epoch_data(self):
         self.db_model.epochs_to_learn = self.epochs
         self.db_model.epochs_learnt = 0
