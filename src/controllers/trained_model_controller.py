@@ -21,7 +21,6 @@ class TrainedModelController:
         trained_model.epochs_to_learn = params['epochs']
         trained_model.batch_size = params['batch_size']
         trained_model.name = name
-        trained_model.save()
         return trained_model
 
     @staticmethod
@@ -50,12 +49,12 @@ class TrainedModelController:
         params = {'batch_size': trained_model.batch_size, 'epochs': trained_model.epochs_to_learn}
         builder = KerasModelBuilder(dataset=dataset_class(), db_model=trained_model, **params)
         if builder.validate():
+            trained_model.save()
             mq = ModelsQueue()
             mq.model_to_be_trained = trained_model
             mq.save()
             return jsonify(trained_model.to_dict())
         else:
-            trained_model.delete_instance()
             raise InvalidUsage("Model cannot be trained on this dataset", status_code=400)
 
     @staticmethod
