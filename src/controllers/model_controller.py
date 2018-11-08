@@ -2,6 +2,7 @@ import json
 
 from flask import jsonify
 
+from src.datasets.scheme_validator import ModelValidator
 from src.exceptions.invalid_usage import InvalidUsage
 from src.models.db_models import NNModel
 
@@ -20,6 +21,7 @@ class ModelController:
         new_model = NNModel()
         new_model.model_json = json.dumps(body["model_json"])
         new_model.name = body.get("name")
+        ModelValidator.validate_model(new_model)
         new_model.save()
         return jsonify(new_model.to_dict())
 

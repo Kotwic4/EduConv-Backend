@@ -79,8 +79,7 @@ class NNTrainedModel(BaseModel):
     dataset = ForeignKeyField(column_name='dataset_id',
                               field='id',
                               model=Dataset,
-                              null=False,
-                              unique=False)
+                              null=False)
     epochs_learnt = IntegerField(column_name='epochs_learnt',
                                  constraints=[Check('epochs_learnt >= 0')],
                                  default=0,
@@ -129,13 +128,13 @@ class ModelEpochData(BaseModel):
     model = ForeignKeyField(column_name='trained_model_id',
                             field='id',
                             model=NNTrainedModel,
-                            null=False)
+                            null=False,
+                            index=True)
     epoch_number = IntegerField(column_name='epoch_number',
                                 constraints=[Check('epoch_number >= 0')],
                                 null=False)
     acc = DoubleField(column_name='acc',
                       constraints=[Check('acc >= 0')],
-
                       null=False)
     loss = DoubleField(column_name='loss',
                        constraints=[Check('loss >= 0')],
