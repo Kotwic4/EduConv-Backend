@@ -21,7 +21,7 @@ class ModelController:
         new_model = NNModel()
         new_model.model_json = json.dumps(body["model_json"])
         new_model.name = body.get("name")
-        ModelValidator.valid_model(new_model)
+        ModelValidator.validate_model(new_model)
         new_model.save()
         return jsonify(new_model.to_dict())
 

@@ -225,7 +225,7 @@ class ModelValidator:
         errors[index].append(msg)
 
     @staticmethod
-    def valid_model(model):
+    def validate_model(model):
         model_json = json.loads(model.model_json)
         layers = model_json.get('layers')
         layers_size = len(layers)
