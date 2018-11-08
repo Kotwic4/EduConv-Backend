@@ -3,6 +3,7 @@ from flask import send_from_directory, jsonify
 from src.datasets.datasets_map import check_if_dataset_class_exists
 from src.exceptions.invalid_usage import InvalidUsage
 from src.models.db_models import NNModel, NNTrainedModel, Dataset, ModelsQueue
+from src.train.keras_model_creator import KerasModelBuilder
 
 
 class TrainedModelController:
@@ -20,14 +21,13 @@ class TrainedModelController:
         trained_model.epochs_to_learn = params['epochs']
         trained_model.batch_size = params['batch_size']
         trained_model.name = name
-        trained_model.save()
         return trained_model
 
     @staticmethod
     def _get_trained_model(trained_model_no):
         trained_model = NNTrainedModel.select().where(NNTrainedModel.id == trained_model_no).get()
         if trained_model is None:
-            raise InvalidUsage("trained_model not found", status_code=404)
+            raise InvalidUsage("Trained model not found", status_code=404)
         return trained_model
 
     @staticmethod
@@ -45,10 +45,17 @@ class TrainedModelController:
         check_if_dataset_class_exists(dataset_name)
 
         trained_model = TrainedModelController._create_trained_model(model, dataset, params, name)
-        mq = ModelsQueue()
-        mq.model_to_be_trained = trained_model
-        mq.save()
-        return jsonify(trained_model.to_dict())
+        dataset_class = check_if_dataset_class_exists(trained_model.dataset.name)
+        params = {'batch_size': trained_model.batch_size, 'epochs': trained_model.epochs_to_learn}
+        builder = KerasModelBuilder(dataset=dataset_class(), db_model=trained_model, **params)
+        if builder.validate():
+            trained_model.save()
+            mq = ModelsQueue()
+            mq.model_to_be_trained = trained_model
+            mq.save()
+            return jsonify(trained_model.to_dict())
+        else:
+            raise InvalidUsage("Model cannot be trained on this dataset", status_code=400)
 
     @staticmethod
     def get_trained_model_info(trained_model_no):

@@ -3,13 +3,13 @@ import json
 from src.exceptions.invalid_usage import InvalidUsage
 
 
-class SchemeValidator:
+class ModelValidator:
 
     ACTIVATIONS = ["linear", "softmax", "relu", "elu", "tanh"]
 
     @staticmethod
     def check_activation_field(value, errors):
-        if value not in SchemeValidator.ACTIVATIONS:
+        if value not in ModelValidator.ACTIVATIONS:
             errors.append(f'Unknown activation type: {value}')
 
     @staticmethod
@@ -68,10 +68,10 @@ class SchemeValidator:
         for arg in args:
             value = args[arg]
             switcher = {
-                'kernel_size': lambda: SchemeValidator.check_kernel_field(value, errors),
-                'strides': lambda: SchemeValidator.check_strides_field(value, errors),
-                'filters': lambda: SchemeValidator.check_filters_field(value, errors),
-                'activation': lambda: SchemeValidator.check_activation_field(value, errors),
+                'kernel_size': lambda: ModelValidator.check_kernel_field(value, errors),
+                'strides': lambda: ModelValidator.check_strides_field(value, errors),
+                'filters': lambda: ModelValidator.check_filters_field(value, errors),
+                'activation': lambda: ModelValidator.check_activation_field(value, errors),
             }
             switcher.get(arg, lambda: errors.append(f'Unknown property: {arg} for conv layer'))()
         conds['was_conv'] = True
@@ -103,7 +103,7 @@ class SchemeValidator:
         for arg in args:
             value = args[arg]
             switcher = {
-                'activation': lambda: SchemeValidator.check_activation_field(value, errors),
+                'activation': lambda: ModelValidator.check_activation_field(value, errors),
             }
             switcher.get(arg, lambda: errors.append(f'Unknown property: {arg} for activation layer'))()
         conds['was_activation'] = True
@@ -121,8 +121,8 @@ class SchemeValidator:
         for arg in args:
             value = args[arg]
             switcher = {
-                'units': lambda: SchemeValidator.check_units_field(value, errors),
-                'activation': lambda: SchemeValidator.check_activation_field(value, errors),
+                'units': lambda: ModelValidator.check_units_field(value, errors),
+                'activation': lambda: ModelValidator.check_activation_field(value, errors),
             }
             switcher.get(arg, lambda: errors.append(f'Unknown property: {arg} for dense layer'))()
         conds['was_dense'] = True
@@ -142,9 +142,9 @@ class SchemeValidator:
         for arg in args:
             value = args[arg]
             switcher = {
-                'axis': lambda: SchemeValidator.check_axis_field(value, errors),
-                'momentum': lambda: SchemeValidator.check_momentum_field(value, errors),
-                'epsilon': lambda: SchemeValidator.check_epsilon_field(value, errors),
+                'axis': lambda: ModelValidator.check_axis_field(value, errors),
+                'momentum': lambda: ModelValidator.check_momentum_field(value, errors),
+                'epsilon': lambda: ModelValidator.check_epsilon_field(value, errors),
             }
             switcher.get(arg, lambda: errors.append(f'Unknown property: {arg} for batch normalization layer'))()
         conds['was_batch_normalization'] = True
@@ -160,8 +160,8 @@ class SchemeValidator:
         for arg in args:
             value = args[arg]
             switcher = {
-                'pool_size': lambda: SchemeValidator.check_pool_size_field(value, errors),
-                'strides': lambda: SchemeValidator.check_strides_field(value, errors),
+                'pool_size': lambda: ModelValidator.check_pool_size_field(value, errors),
+                'strides': lambda: ModelValidator.check_strides_field(value, errors),
             }
             switcher.get(arg, lambda: errors.append(f'Unknown property: {arg} for max pooling layer'))()
         conds['was_pooling'] = True
@@ -177,8 +177,8 @@ class SchemeValidator:
         for arg in args:
             value = args[arg]
             switcher = {
-                'pool_size': lambda: SchemeValidator.check_pool_size_field(value, errors),
-                'strides': lambda: SchemeValidator.check_strides_field(value, errors),
+                'pool_size': lambda: ModelValidator.check_pool_size_field(value, errors),
+                'strides': lambda: ModelValidator.check_strides_field(value, errors),
             }
             switcher.get(arg, lambda: errors.append(f'Unknown property: {arg} for average pooling layer'))()
         conds['was_pooling'] = True
@@ -194,7 +194,7 @@ class SchemeValidator:
         for arg in args:
             value = args[arg]
             switcher = {
-                'rate': lambda: SchemeValidator.check_rate_field(value, errors)
+                'rate': lambda: ModelValidator.check_rate_field(value, errors)
             }
             switcher.get(arg, lambda: errors.append(f'Unknown property: {arg} for dropout layer'))()
         conds['was_dropout'] = True
@@ -207,14 +207,14 @@ class SchemeValidator:
         name = layer.get('layer_name')
         args = layer.get('args')
         switcher = {
-            'Conv2D': lambda: SchemeValidator.validate_conv_layer(args, conds),
-            'Dense': lambda: SchemeValidator.validate_dense_layer(args, conds),
-            'Activation': lambda: SchemeValidator.validate_activation_layer(args, conds),
-            'Dropout': lambda: SchemeValidator.validate_dropout_layer(args, conds),
-            'Flatten': lambda: SchemeValidator.validate_flatten_layer(args, conds),
-            'MaxPooling2D': lambda: SchemeValidator.validate_max_pooling_layer(args, conds),
-            'AveragePooling2D': lambda: SchemeValidator.validate_average_pooling_layer(args, conds),
-            'BatchNormalization': lambda: SchemeValidator.validate_batch_normalization_layer(args, conds),
+            'Conv2D': lambda: ModelValidator.validate_conv_layer(args, conds),
+            'Dense': lambda: ModelValidator.validate_dense_layer(args, conds),
+            'Activation': lambda: ModelValidator.validate_activation_layer(args, conds),
+            'Dropout': lambda: ModelValidator.validate_dropout_layer(args, conds),
+            'Flatten': lambda: ModelValidator.validate_flatten_layer(args, conds),
+            'MaxPooling2D': lambda: ModelValidator.validate_max_pooling_layer(args, conds),
+            'AveragePooling2D': lambda: ModelValidator.validate_average_pooling_layer(args, conds),
+            'BatchNormalization': lambda: ModelValidator.validate_batch_normalization_layer(args, conds),
         }
         return switcher.get(name, lambda: [f'Unknown layer type: {layer}'])()
 
@@ -225,9 +225,9 @@ class SchemeValidator:
         errors[index].append(msg)
 
     @staticmethod
-    def valid_scheme(scheme):
-        scheme_json = json.loads(scheme.scheme_json)
-        layers = scheme_json.get('layers')
+    def validate_model(model):
+        model_json = json.loads(model.model_json)
+        layers = model_json.get('layers')
         layers_size = len(layers)
         if layers is None or len(layers) == 0:
             raise InvalidUsage("Scheme do not have layers config", status_code=400)
@@ -245,15 +245,15 @@ class SchemeValidator:
 
         for i in range(layers_size):
             layer = layers[i]
-            layer_errors = SchemeValidator.validate_layer(layer, conds)
+            layer_errors = ModelValidator.validate_layer(layer, conds)
             if layer_errors:
                 errors[i] = layer_errors
 
         last_index = layers_size - 1
         if not conds['was_dense']:
-            SchemeValidator.add_error(errors, last_index, "There must be dense layer in scheme")
+            ModelValidator.add_error(errors, last_index, "There must be dense layer in scheme")
         if not conds['was_flatten']:
-            SchemeValidator.add_error(errors, last_index, "There must be flatten layer in scheme")
+            ModelValidator.add_error(errors, last_index, "There must be flatten layer in scheme")
 
         if len(errors):
             raise InvalidUsage("Scheme not valid", status_code=400, payload={'errors': errors})
