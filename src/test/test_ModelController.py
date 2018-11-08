@@ -4,7 +4,7 @@ import unittest
 
 class test_api(unittest.TestCase):
     def setUp(self):
-        MODELS = [NNModel,NNTrainedModel,Dataset]
+        MODELS = [NNModel,NNTrainedModel,Dataset, ModelsQueue]
         # use an in-memory SQLite for tests.
         self.db_test = SqliteDatabase(':memory:')
 
@@ -141,7 +141,7 @@ class test_api(unittest.TestCase):
 
     def test_put_train_model_OK(self):
         self.models[0].save()
-        json="""{
+        json={
             "model_id":1,
             "dataset":"mnist",
             "name":"trained_model name",
@@ -150,7 +150,7 @@ class test_api(unittest.TestCase):
             "epochs":1,
             "batch_size":1
             }
-        }"""
+        }
         response = self.client.post("/trained_model", json=json)
         self.assertEqual(response.status_code,200)
 

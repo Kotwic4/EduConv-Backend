@@ -49,7 +49,7 @@ class trained_ModelController:
         
         model = NNModel.get_or_none(NNModel.id == model_id)
         if model is None:
-            raise InvalidUsage("model with given model id doesn't exist in database",400)
+            raise InvalidUsage("model with given model id doesn't exist in database",404)
         dataset = Dataset.select().where(Dataset.name == dataset_name).get()
         dataset_class = check_if_dataset_class_exists(dataset_name)
 
