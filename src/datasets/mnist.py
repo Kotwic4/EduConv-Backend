@@ -1,8 +1,9 @@
+from os import path
+
 import keras
 import keras.backend as K
-from PIL import Image
 from keras.datasets import mnist
-from os import path
+
 
 class MnistInput:
     def __init__(self):
@@ -35,13 +36,13 @@ class MnistInput:
 
     @staticmethod
     def get_bitmap_directory(train_dataset=False):
-        if train_dataset:    
+        if train_dataset:
             return "db/datasets/mnist/train/"
         return "db/datasets/mnist/test/"
 
     @staticmethod
     def get_label(image_no, train_dataset=False):
         bitmap_path = MnistInput.get_bitmap_directory(train_dataset)
-        bitmap_path = path.join(bitmap_path,"labels.txt")
-        with open(bitmap_path,"r") as f:
+        bitmap_path = path.join(bitmap_path, "labels.txt")
+        with open(bitmap_path, "r") as f:
             return f.readline().split(' ')[image_no]

@@ -12,9 +12,10 @@ from src.train.trainer import start_training
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-thread = threading.Thread(target=start_training) 
+thread = threading.Thread(target=start_training)
 thread.daemon = True  # Daemonize thread
 thread.start()  # Start the execution
+
 
 @cross_origin()
 @app.route('/model', methods=['POST'])
@@ -82,15 +83,15 @@ def get_datasets():
 @app.route('/data/<dataset_id>/bitmaps/<int:image_no>')
 def get_bitmap(dataset_id, image_no):
     dataset = request.args['imageset']
-    is_train_dataset = dataset=="train" 
-    return DatasetController.get_bitmap(dataset_id, image_no,is_train_dataset)
+    is_train_dataset = dataset == "train"
+    return DatasetController.get_bitmap(dataset_id, image_no, is_train_dataset)
 
 
 @app.route('/data/<dataset_id>/label/<int:image_no>')
 def get_label(dataset_id, image_no):
     dataset = request.args['imageset']
-    is_train_dataset = dataset=="train" 
-    return DatasetController.get_label(dataset_id, image_no, is_train_dataset) 
+    is_train_dataset = dataset == "train"
+    return DatasetController.get_label(dataset_id, image_no, is_train_dataset)
 
 
 @app.route('/data/<int:dataset_id>/')

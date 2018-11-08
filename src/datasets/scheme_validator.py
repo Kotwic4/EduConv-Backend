@@ -4,7 +4,6 @@ from src.exceptions.invalid_usage import InvalidUsage
 
 
 class ModelValidator:
-
     ACTIVATIONS = ["linear", "softmax", "relu", "elu", "tanh"]
 
     @staticmethod
@@ -56,7 +55,6 @@ class ModelValidator:
     def check_axis_field(value, errors):
         if type(value) != int:
             errors.append(f'Axis must be an int')
-
 
     @staticmethod
     def validate_conv_layer(args, conds):
