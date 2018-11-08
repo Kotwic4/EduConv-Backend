@@ -2,20 +2,22 @@ from src.models.db_models import *
 from main import app
 import unittest
 
-class test_api(unittest.TestCase):
-    def setUp(self):
-        MODELS = [NNModel,NNTrainedModel,Dataset, ModelsQueue]
-        # use an in-memory SQLite for tests.
-        self.db_test = SqliteDatabase(':memory:')
-
+class TestAPIBase():
+    @staticmethod
+    def set_up_client():
         app.config['TESTING'] = True
         with app.app_context():
             pass
-        self.client = app.test_client()
+        return app.test_client()
 
-        self.db_test.bind(MODELS, bind_refs=False, bind_backrefs=False)
-        self.db_test.connect()
-        self.db_test.create_tables(MODELS)
+    @staticmethod
+    def set_up_db():
+        MODELS = [NNModel,NNTrainedModel,Dataset, ModelsQueue]
+        # use an in-memory SQLite for tests.
+        db_test = SqliteDatabase(':memory:')
+        db_test.bind(MODELS, bind_refs=False, bind_backrefs=False)
+        db_test.connect()
+        db_test.create_tables(MODELS)
         d = Dataset()
         d.name="mnist"
         d.img_depth=1
@@ -34,13 +36,21 @@ class test_api(unittest.TestCase):
         d.train_images_count=0
         d.labels='['+','.join(['"'+str(i)+'"' for i in range(1,11)])+']'
         d.save()
-        self.models=[]
+        models=[]
         for i in range(1,3):
             model=NNModel()
             model.name=f"name{i}"
             model.model_json='{"model'+str(i)+'": "model'+str(i)+'"}'
-            self.models.append(model)
+            models.append(model)
+
+        return (db_test, models)
     
+class TestModelController(unittest.TestCase):
+
+    def setUp(self):
+        self.client = TestAPIBase.set_up_client()
+        self.db_test, self.models = TestAPIBase.set_up_db()
+
     def tearDown(self):
         self.db_test.close()
 
@@ -84,6 +94,14 @@ class test_api(unittest.TestCase):
         assert response_dict["model_json"]=={"model2": "model2"}
         self.assertIn("name",response_dict.keys())
         self.assertIn("model_json",response_dict.keys())
+
+class TestTrainedModelController(unittest.TestCase):
+    def setUp(self):
+        self.client = TestAPIBase.set_up_client()
+        self.db_test, self.models = TestAPIBase.set_up_db()
+
+    def tearDown(self):
+        self.db_test.close()
 
     def test_put_train_model_incorrect_json(self):
         response = self.client.post("/trained_model",json="""{"}""")
@@ -198,6 +216,14 @@ class test_api(unittest.TestCase):
         self.assertEqual(response.status_code,200)
         actual = response.get_json()
         self.assertEqual(len(actual),2)
+
+class TestDatasetController(unittest.TestCase):
+    def setUp(self):
+        self.client = TestAPIBase.set_up_client()
+        self.db_test, self.models = TestAPIBase.set_up_db()
+
+    def tearDown(self):
+        self.db_test.close()
 
     def test_get_dataset(self):
         response = self.client.get('/data/1/')
