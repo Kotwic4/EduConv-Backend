@@ -17,12 +17,12 @@ class MnistInput:
         (self.x_train, self.y_train), (self.x_test, self.y_test) = mnist.load_data()
 
         if K.image_data_format() == 'channels_first':
-            self.x_train = self.x_train.reshape(self.x_train.shape[0], 1, self.img_rows, self.img_cols)
-            self.x_test = self.x_test.reshape(self.x_test.shape[0], 1, self.img_rows, self.img_cols)
+            self.x_train = self.x_train.reshape(self.x_train.shape[0], 1, self.img_rows, self.img_cols))
+            self.x_test = self.x_test.reshape((self.x_test.shape[0], 1, self.img_rows, self.img_cols))
             self.input_shape = (1, self.img_rows, self.img_cols)
         else:
-            self.x_train = self.x_train.reshape(self.x_train.shape[0], self.img_rows, self.img_cols, 1)
-            self.x_test = self.x_test.reshape(self.x_test.shape[0], self.img_rows, self.img_cols, 1)
+            self.x_train = self.x_train.reshape((self.x_train.shape[0], self.img_rows, self.img_cols, 1))
+            self.x_test = self.x_test.reshape((self.x_test.shape[0], self.img_rows, self.img_cols, 1))
             self.input_shape = (self.img_rows, self.img_cols, 1)
 
         self.x_train = self.x_train.astype('float32')

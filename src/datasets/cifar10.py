@@ -42,8 +42,8 @@ class Cifar10Input:
                                   data_batches[3][b'data'], data_batches[4][b'data']))
         test_labels = unpickle(self.path + "test_batch")[b'labels']
         test_data = unpickle(self.path + "test_batch")[b'data']
-        self.x_train = data.reshape(data.shape[0], 3, self.img_rows, self.img_cols)
-        self.x_test = test_data.reshape(test_data.shape[0], 3, self.img_rows, self.img_cols)
+        self.x_train = data.reshape((data.shape[0], 3, self.img_rows, self.img_cols))
+        self.x_test = test_data.reshape((test_data.shape[0], 3, self.img_rows, self.img_cols))
         if keras_b.image_data_format() == 'channels_first':
             self.input_shape = (3, self.img_rows, self.img_cols)
         else:
@@ -60,7 +60,7 @@ class Cifar10Input:
         self.test_labels = test_labels
 
     @staticmethod
-    def acquire(db, path=None):
+    def acquire(db, path=None, recreate_images=False):
         url = 'https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz'
         if path is not None:
             path = path
@@ -80,8 +80,9 @@ class Cifar10Input:
                                  str(json.dumps(Cifar10Input.get_labels(path)))])
             db.commit()
         c = Cifar10Input()
-        Cifar10Input.save_images(c.x_train, c.train_labels, Cifar10Input.get_bitmap_directory(True))
-        Cifar10Input.save_images(c.x_test, c.test_labels, Cifar10Input.get_bitmap_directory(False))
+        if(recreate_images):
+            Cifar10Input.save_images(c.x_train, c.train_labels, Cifar10Input.get_bitmap_directory(True))
+            Cifar10Input.save_images(c.x_test, c.test_labels, Cifar10Input.get_bitmap_directory(False))
 
     @staticmethod
     def save_images(image_set, labels_set, bitmap_directory):
