@@ -7,6 +7,8 @@ import tensorflowjs as tfjs
 from keras.callbacks import Callback
 from keras.models import Sequential
 
+from src.models.db_models import ModelEpochData
+
 
 class ProgressCallback(Callback):
     def __init__(self, db_model):
@@ -16,6 +18,8 @@ class ProgressCallback(Callback):
     def on_epoch_end(self, epoch, logs=None):
         self.db_model.epochs_learnt += 1
         self.db_model.save()
+        ModelEpochData.create(model=self.db_model, epoch_number=epoch + 1, acc=logs['val_acc'], loss=logs['val_loss'])
+
 
 class KerasModelBuilder:
     def __init__(self, dataset, db_model, epochs=1, batch_size=32):
@@ -37,16 +41,13 @@ class KerasModelBuilder:
         self.model.compile(loss=keras.losses.categorical_crossentropy,
                            optimizer=keras.optimizers.Adadelta(),
                            metrics=['accuracy'])
-
+        self.set_epoch_data()
         self.model.fit(self.dataset.x_train, self.dataset.y_train,
                        batch_size=self.batch_size,
                        epochs=self.epochs,
                        verbose=1,
                        validation_data=(self.dataset.x_test, self.dataset.y_test),
                        callbacks=[ProgressCallback(db_model=self.db_model)])
-        score = self.model.evaluate(self.dataset.x_test, self.dataset.y_test, verbose=0)
-        print('Test loss:', score[0])
-        print('Test accuracy:', score[1])
         tfjs.converters.save_keras_model(self.model, path)
         keras.backend.clear_session()
 
@@ -64,3 +65,21 @@ class KerasModelBuilder:
         data = self.parse_model_data()
         self.add_layers(data['layers'])
         self.train(path)
+
+    def validate(self):
+        data = self.parse_model_data()
+        try:
+            self.add_layers(data['layers'])
+            return True
+        except ValueError as err:
+            print("OS error: {0}".format(err))
+            return False
+
+    def set_epoch_data(self):
+        self.db_model.epochs_to_learn = self.epochs
+        self.db_model.epochs_learnt = 0
+        self.db_model.save()
+
+        ModelEpochData.delete().where(ModelEpochData.model == self.db_model).execute()
+        score = self.model.evaluate(self.dataset.x_test, self.dataset.y_test, verbose=0)
+        ModelEpochData.create(model=self.db_model, epoch_number=0, acc=score[1], loss=score[0])

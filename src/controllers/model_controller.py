@@ -6,6 +6,7 @@ from os import path
 
 from flask import jsonify
 
+from src.datasets.scheme_validator import ModelValidator
 from src.exceptions.invalid_usage import InvalidUsage
 from src.models.db_models import NNModel
 
@@ -31,6 +32,7 @@ class ModelController:
         except:
             raise InvalidUsage("There is no model_json in sent model",status_code=400)
         new_model.name = body_dict.get("name","")
+        ModelValidator.validate_model(new_model)
         new_model.save()
         return jsonify(new_model.to_dict())
 
@@ -44,8 +46,3 @@ class ModelController:
         models = NNModel.select()
         return jsonify([model.to_dict() for model in models])
 
-    @staticmethod
-    def delete_model(model_no):
-        model = ModelController._get_model(model_no)
-        shutil.rmtree(ModelController._model_path(model))
-        model.delete_instance()

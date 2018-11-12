@@ -6,10 +6,10 @@ from src.models.db_models import NNModel, NNTrainedModel, Dataset, ModelsQueue
 from src.train.keras_model_creator import KerasModelBuilder
 
 
-class trained_ModelController:
+class TrainedModelController:
 
     @staticmethod
-    def _trained_model_path(trained_model):
+    def trained_model_path(trained_model):
         return "db/trained_models/" + str(trained_model.get_id())
 
     @staticmethod
@@ -21,16 +21,14 @@ class trained_ModelController:
         trained_model.epochs_to_learn = params['epochs']
         trained_model.batch_size = params['batch_size']
         trained_model.name = name
-        trained_model.save()
         return trained_model
 
     @staticmethod
     def _get_trained_model(trained_model_no):
         trained_model = NNTrainedModel.get_or_none(NNTrainedModel.id == trained_model_no)
         if trained_model is None:
-            raise InvalidUsage("trained_model not found", status_code=404)
+            raise InvalidUsage("Trained model not found", status_code=404)
         return trained_model
-
 
     @staticmethod
     def train_trained_model(body):
@@ -51,17 +49,24 @@ class trained_ModelController:
         if model is None:
             raise InvalidUsage("model with given model id doesn't exist in database",404)
         dataset = Dataset.select().where(Dataset.name == dataset_name).get()
-        dataset_class = check_if_dataset_class_exists(dataset_name)
+        check_if_dataset_class_exists(dataset_name)
 
-        trained_model = trained_ModelController._create_trained_model(model, dataset, params, name)
-        mq = ModelsQueue()
-        mq.model_to_be_trained=trained_model
-        mq.save()
-        return jsonify(trained_model.to_dict())
+        trained_model = TrainedModelController._create_trained_model(model, dataset, params, name)
+        dataset_class = check_if_dataset_class_exists(trained_model.dataset.name)
+        params = {'batch_size': trained_model.batch_size, 'epochs': trained_model.epochs_to_learn}
+        builder = KerasModelBuilder(dataset=dataset_class(), db_model=trained_model, **params)
+        if builder.validate():
+            trained_model.save()
+            mq = ModelsQueue()
+            mq.model_to_be_trained = trained_model
+            mq.save()
+            return jsonify(trained_model.to_dict())
+        else:
+            raise InvalidUsage("Model cannot be trained on this dataset", status_code=400)
 
     @staticmethod
     def get_trained_model_info(trained_model_no):
-        return jsonify(trained_ModelController._get_trained_model(trained_model_no).to_dict())
+        return jsonify(TrainedModelController._get_trained_model(trained_model_no).to_dict())
 
     @staticmethod
     def get_trained_models():
@@ -70,11 +75,11 @@ class trained_ModelController:
 
     @staticmethod
     def get_trained_trained_model(trained_model_no, filename):
-        trained_model = trained_ModelController._get_trained_model(trained_model_no)
-        dir_path = trained_ModelController._trained_model_path(trained_model)
+        trained_model = TrainedModelController._get_trained_model(trained_model_no)
+        dir_path = TrainedModelController.trained_model_path(trained_model)
         return send_from_directory(dir_path, filename)
 
     @staticmethod
     def delete_trained_model(trained_model_no):
-        trained_model = trained_ModelController._get_trained_model(trained_model_no)
+        trained_model = TrainedModelController._get_trained_model(trained_model_no)
         trained_model.delete_instance()

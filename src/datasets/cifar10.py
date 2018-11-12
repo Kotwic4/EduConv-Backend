@@ -2,8 +2,9 @@ import json
 import os
 import pickle
 import tarfile
-from urllib import request
 from os import path
+from urllib import request
+
 import keras.backend as keras_b
 import numpy
 from PIL import Image
@@ -12,7 +13,8 @@ from src.exceptions.invalid_usage import InvalidUsage
 
 DEFAULT_SHORT_PATH = "db/datasets/Cifar-10/"
 PATH_EXTENSION = "cifar-10-batches-py/"
-DEFAULT_PATH = DEFAULT_SHORT_PATH+PATH_EXTENSION
+DEFAULT_PATH = DEFAULT_SHORT_PATH + PATH_EXTENSION
+
 
 def unpickle(file):
     with open(file, 'rb') as fo:
@@ -22,6 +24,7 @@ def unpickle(file):
 
 class Cifar10Input:
     def __init__(self, path=None):
+        self.name='Cifar-10'
         if path is not None:
             self.path = path
         else:
@@ -41,8 +44,8 @@ class Cifar10Input:
                                   data_batches[3][b'data'], data_batches[4][b'data']))
         test_labels = unpickle(self.path + "test_batch")[b'labels']
         test_data = unpickle(self.path + "test_batch")[b'data']
-        self.x_train = data.reshape(data.shape[0], 3, self.img_rows, self.img_cols)
-        self.x_test = test_data.reshape(test_data.shape[0], 3, self.img_rows, self.img_cols)
+        self.x_train = data.reshape((data.shape[0], 3, self.img_rows, self.img_cols))
+        self.x_test = test_data.reshape((test_data.shape[0], 3, self.img_rows, self.img_cols))
         if keras_b.image_data_format() == 'channels_first':
             self.input_shape = (3, self.img_rows, self.img_cols)
         else:
@@ -56,11 +59,10 @@ class Cifar10Input:
         self.y_train = np_utils.to_categorical(labels, 10)
         self.y_test = np_utils.to_categorical(test_labels, 10)
         self.train_labels = labels
-        self.test_labels=test_labels
-        
+        self.test_labels = test_labels
 
     @staticmethod
-    def acquire(db, path=None):
+    def acquire(db, path=None, recreate_images=False):
         url = 'https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz'
         if path is not None:
             path = path
@@ -80,19 +82,17 @@ class Cifar10Input:
                                  str(json.dumps(Cifar10Input.get_labels(path)))])
             db.commit()
         c = Cifar10Input()
-        Cifar10Input.save_images(c.x_train,c.train_labels,Cifar10Input.get_bitmap_directory(True))
-        Cifar10Input.save_images(c.x_test,c.test_labels,Cifar10Input.get_bitmap_directory(False))
-
+       
     @staticmethod
     def save_images(image_set, labels_set, bitmap_directory):
         labels = Cifar10Input.get_labels()
         ensure_directory(bitmap_directory)
         for i, img_array in enumerate(image_set):
-            img_path = os.path.join(bitmap_directory,str(i)+".bmp")
+            img_path = os.path.join(bitmap_directory, str(i) + ".bmp")
             img = Image.fromarray((img_array * 255).astype('uint8'))
-            img.save(img_path,'bmp')
-        with open(os.path.join(bitmap_directory,"labels.txt"),"w+") as labels_file:
-            labels_file.writelines([labels[i]+" " for i in labels_set])
+            img.save(img_path, 'bmp')
+        with open(os.path.join(bitmap_directory, "labels.txt"), "w+") as labels_file:
+            labels_file.writelines([labels[i] + " " for i in labels_set])
 
     @staticmethod
     def get_labels(path=None):
@@ -112,13 +112,14 @@ class Cifar10Input:
     @staticmethod
     def get_label(image_no, train_dataset=False):
         bitmap_path = Cifar10Input.get_bitmap_directory(train_dataset)
-        bitmap_path = path.join(bitmap_path,"labels.txt")
-        with open(bitmap_path,"r") as f:
+        bitmap_path = path.join(bitmap_path, "labels.txt")
+        with open(bitmap_path, "r") as f:
             line = f.readline()
             labels = line.split(' ')
             if image_no >= len(labels):
                 raise InvalidUsage("Label not found",404)
             return labels[image_no]
+
 
 def ensure_directory(directory):
     if not os.path.exists(directory):
