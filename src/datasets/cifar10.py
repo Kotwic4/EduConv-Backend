@@ -23,6 +23,7 @@ def unpickle(file):
 
 class Cifar10Input:
     def __init__(self, path=None):
+        self.name='Cifar-10'
         if path is not None:
             self.path = path
         else:
@@ -80,10 +81,7 @@ class Cifar10Input:
                                  str(json.dumps(Cifar10Input.get_labels(path)))])
             db.commit()
         c = Cifar10Input()
-        if(recreate_images):
-            Cifar10Input.save_images(c.x_train, c.train_labels, Cifar10Input.get_bitmap_directory(True))
-            Cifar10Input.save_images(c.x_test, c.test_labels, Cifar10Input.get_bitmap_directory(False))
-
+       
     @staticmethod
     def save_images(image_set, labels_set, bitmap_directory):
         labels = Cifar10Input.get_labels()

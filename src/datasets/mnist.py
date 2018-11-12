@@ -7,9 +7,9 @@ from keras.datasets import mnist
 
 class MnistInput:
     def __init__(self):
+        self.name='mnist'
         self.batch_size = 128
         self.num_classes = 10
-
         # input image dimensions
         self.img_rows, self.img_cols = 28, 28
 
@@ -17,7 +17,7 @@ class MnistInput:
         (self.x_train, self.y_train), (self.x_test, self.y_test) = mnist.load_data()
 
         if K.image_data_format() == 'channels_first':
-            self.x_train = self.x_train.reshape(self.x_train.shape[0], 1, self.img_rows, self.img_cols))
+            self.x_train = self.x_train.reshape((self.x_train.shape[0], 1, self.img_rows, self.img_cols))
             self.x_test = self.x_test.reshape((self.x_test.shape[0], 1, self.img_rows, self.img_cols))
             self.input_shape = (1, self.img_rows, self.img_cols)
         else:
@@ -46,3 +46,7 @@ class MnistInput:
         bitmap_path = path.join(bitmap_path, "labels.txt")
         with open(bitmap_path, "r") as f:
             return f.readline().split(' ')[image_no]
+
+    @staticmethod
+    def get_labels():
+        return [str(i) for i in range(10)]
