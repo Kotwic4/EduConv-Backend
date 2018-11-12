@@ -1,15 +1,16 @@
+from os import path
+
 import keras
 import keras.backend as K
-from PIL import Image
 from keras.datasets import mnist
 from os import path
 from src.exceptions.invalid_usage import InvalidUsage
 
 class MnistInput:
     def __init__(self):
+        self.name='mnist'
         self.batch_size = 128
         self.num_classes = 10
-
         # input image dimensions
         self.img_rows, self.img_cols = 28, 28
 
@@ -17,12 +18,12 @@ class MnistInput:
         (self.x_train, self.y_train), (self.x_test, self.y_test) = mnist.load_data()
 
         if K.image_data_format() == 'channels_first':
-            self.x_train = self.x_train.reshape(self.x_train.shape[0], 1, self.img_rows, self.img_cols)
-            self.x_test = self.x_test.reshape(self.x_test.shape[0], 1, self.img_rows, self.img_cols)
+            self.x_train = self.x_train.reshape((self.x_train.shape[0], 1, self.img_rows, self.img_cols))
+            self.x_test = self.x_test.reshape((self.x_test.shape[0], 1, self.img_rows, self.img_cols))
             self.input_shape = (1, self.img_rows, self.img_cols)
         else:
-            self.x_train = self.x_train.reshape(self.x_train.shape[0], self.img_rows, self.img_cols, 1)
-            self.x_test = self.x_test.reshape(self.x_test.shape[0], self.img_rows, self.img_cols, 1)
+            self.x_train = self.x_train.reshape((self.x_train.shape[0], self.img_rows, self.img_cols, 1))
+            self.x_test = self.x_test.reshape((self.x_test.shape[0], self.img_rows, self.img_cols, 1))
             self.input_shape = (self.img_rows, self.img_cols, 1)
 
         self.x_train = self.x_train.astype('float32')
@@ -36,7 +37,7 @@ class MnistInput:
 
     @staticmethod
     def get_bitmap_directory(train_dataset=False):
-        if train_dataset:    
+        if train_dataset:
             return "db/datasets/mnist/train/"
         return "db/datasets/mnist/test/"
 
@@ -49,4 +50,6 @@ class MnistInput:
             if image_no >= len(labels):
                 raise InvalidUsage("Label not found",404)
             return labels[image_no]
-            
+    @staticmethod
+    def get_labels():
+        return [str(i) for i in range(10)]

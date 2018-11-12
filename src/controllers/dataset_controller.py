@@ -1,8 +1,6 @@
-from io import BytesIO
-
 from flask import send_file, jsonify
 
-from src.datasets.datasets_map import check_if_dataset_class_exists, datasets_map
+from src.datasets.datasets_map import check_if_dataset_class_exists
 from src.exceptions.invalid_usage import InvalidUsage
 from src.models.db_models import Dataset
 from os.path import isfile
@@ -30,7 +28,7 @@ class DatasetController:
     def get_label(dataset_id, image_no, train_set=False):
         dataset = DatasetController._get_dataset(dataset_id)
         dataset_class = check_if_dataset_class_exists(dataset.name)  # TODO: change a way of getting dataset classes
-        
+
         return str.format("{{\"label\":\"{}\"}}", dataset_class.get_label(image_no, train_set))
 
     @staticmethod
