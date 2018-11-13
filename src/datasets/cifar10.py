@@ -62,7 +62,7 @@ class Cifar10Input:
         self.test_labels = test_labels
 
     @staticmethod
-    def acquire(db, path=None, recreate_images=False):
+    def acquire(db, path=None):
         url = 'https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz'
         if path is not None:
             path = path

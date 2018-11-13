@@ -1,5 +1,6 @@
 from src.models.db_models import *
 from src.datasets.scheme_validator import *
+from src.test.ApiTestsBase import TestAPIBase
 import unittest
 
 
