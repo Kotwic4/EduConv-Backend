@@ -12,7 +12,7 @@ pip3 install -m requirements.txt
 Following command will init empty db and insert datasets info.
 
 ```
-python3 init_db.py
+python3 init_db.py --all
 ```
 
 ### Running app
