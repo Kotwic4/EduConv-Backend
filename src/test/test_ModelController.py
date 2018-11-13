@@ -47,7 +47,7 @@ class TestModelController(unittest.TestCase):
 
     def test_put_model_proper_json(self):
         response = self.client.post("/model", json=self.models[0].to_dict())
-        assert response.status_code == 400
+        assert response.status_code == 200
 
     def test_get_model_info(self):
         self.models[1].save()
