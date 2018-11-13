@@ -36,6 +36,7 @@ python3 -m unittest
 You can also run all tests in specific module or even single test by simply passing it as an arg for unittest:
 ```
 python3 -m unittest src.test.test_SchemaValidator.test_validate_dropout_layer_after_dropout_layer
+```
 
 ### Running linter
 Running linter which check code style.
