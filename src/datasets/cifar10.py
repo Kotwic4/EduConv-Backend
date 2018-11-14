@@ -9,6 +9,7 @@ import keras.backend as keras_b
 import numpy
 from PIL import Image
 from keras.utils import np_utils
+from src.exceptions.invalid_usage import InvalidUsage
 
 DEFAULT_SHORT_PATH = "db/datasets/Cifar-10/"
 PATH_EXTENSION = "cifar-10-batches-py/"
@@ -23,7 +24,7 @@ def unpickle(file):
 
 class Cifar10Input:
     def __init__(self, path=None):
-        self.name='Cifar-10'
+        self.name = 'Cifar-10'
         if path is not None:
             self.path = path
         else:
@@ -61,7 +62,7 @@ class Cifar10Input:
         self.test_labels = test_labels
 
     @staticmethod
-    def acquire(db, path=None, recreate_images=False):
+    def acquire(db, path=None):
         url = 'https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz'
         if path is not None:
             path = path
@@ -81,7 +82,7 @@ class Cifar10Input:
                                  str(json.dumps(Cifar10Input.get_labels(path)))])
             db.commit()
         c = Cifar10Input()
-       
+
     @staticmethod
     def save_images(image_set, labels_set, bitmap_directory):
         labels = Cifar10Input.get_labels()
@@ -114,7 +115,10 @@ class Cifar10Input:
         bitmap_path = path.join(bitmap_path, "labels.txt")
         with open(bitmap_path, "r") as f:
             line = f.readline()
-            return line.split(' ')[image_no]
+            labels = line.split(' ')
+            if image_no >= len(labels):
+                raise InvalidUsage("Label not found", 404)
+            return labels[image_no]
 
 
 def ensure_directory(directory):

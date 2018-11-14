@@ -1,6 +1,5 @@
+from flask import Flask, request, jsonify, g, json
 import threading
-
-from flask import Flask, request, jsonify, g
 from flask_cors import CORS, cross_origin
 
 from src.controllers.dataset_controller import DatasetController
@@ -21,7 +20,6 @@ thread.start()  # Start the execution
 @app.route('/model', methods=['POST'])
 def put_model():
     body = request.get_json()
-    print(body)
     return ModelController.put_model(body)
 
 
@@ -29,12 +27,6 @@ def put_model():
 @app.route('/model/<int:model_no>', methods=['GET'])
 def get_model_info(model_no):
     return ModelController.get_model_info(model_no)
-
-
-@cross_origin()
-@app.route('/model/<int:model_no>', methods=['DELETE'])
-def delete_model(model_no):
-    return ModelController.delete_model(model_no)
 
 
 @cross_origin()
@@ -60,13 +52,6 @@ def train_trained_model():
 @app.route('/trained_model/<int:trained_model_no>', methods=['GET'])
 def get_trained_model_info(trained_model_no):
     return TrainedModelController.get_trained_model_info(trained_model_no)
-
-
-@cross_origin()
-@app.route('/trained_model/<int:trained_model_no>', methods=['DELETE'])
-def delete_trained_model(trained_model_no):
-    return TrainedModelController.delete_trained_model(trained_model_no)
-
 
 @cross_origin()
 @app.route('/trained_model/<int:trained_model_no>/file/<filename>', methods=['GET'])

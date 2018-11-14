@@ -71,7 +71,7 @@ def add_labels(data, labels, dataset_path):
 def add_cifar():
     print('adding cifar')
     db = sqlite3.connect("db/db.sqlite")
-    Cifar10Input.acquire(db, recreate_images=recreate_images_and_labels)
+    Cifar10Input.acquire(db)
     db.close()
 
 
