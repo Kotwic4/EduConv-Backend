@@ -24,7 +24,7 @@ def unpickle(file):
 
 class Cifar10Input:
     def __init__(self, path=None):
-        self.name='Cifar-10'
+        self.name = 'Cifar-10'
         if path is not None:
             self.path = path
         else:
@@ -82,7 +82,7 @@ class Cifar10Input:
                                  str(json.dumps(Cifar10Input.get_labels(path)))])
             db.commit()
         c = Cifar10Input()
-       
+
     @staticmethod
     def save_images(image_set, labels_set, bitmap_directory):
         labels = Cifar10Input.get_labels()
@@ -117,7 +117,7 @@ class Cifar10Input:
             line = f.readline()
             labels = line.split(' ')
             if image_no >= len(labels):
-                raise InvalidUsage("Label not found",404)
+                raise InvalidUsage("Label not found", 404)
             return labels[image_no]
 
 

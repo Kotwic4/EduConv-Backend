@@ -6,9 +6,10 @@ from keras.datasets import mnist
 from os import path
 from src.exceptions.invalid_usage import InvalidUsage
 
+
 class MnistInput:
     def __init__(self):
-        self.name='mnist'
+        self.name = 'mnist'
         self.batch_size = 128
         self.num_classes = 10
         # input image dimensions
@@ -44,12 +45,13 @@ class MnistInput:
     @staticmethod
     def get_label(image_no, train_dataset=False):
         bitmap_path = MnistInput.get_bitmap_directory(train_dataset)
-        bitmap_path = path.join(bitmap_path,"labels.txt")
-        with open(bitmap_path,"r") as f:
+        bitmap_path = path.join(bitmap_path, "labels.txt")
+        with open(bitmap_path, "r") as f:
             labels = f.readline().split(' ')
             if image_no >= len(labels):
-                raise InvalidUsage("Label not found",404)
+                raise InvalidUsage("Label not found", 404)
             return labels[image_no]
+
     @staticmethod
     def get_labels():
         return [str(i) for i in range(10)]

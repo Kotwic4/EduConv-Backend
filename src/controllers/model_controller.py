@@ -26,11 +26,11 @@ class ModelController:
         try:
             new_model.model_json = json.dumps(body.get("model_json"))
         except:
-            raise InvalidUsage("There is no model_json in sent model",status_code=400)
+            raise InvalidUsage("There is no model_json in sent model", status_code=400)
         b = body.get("model_json")
-        if not isinstance(b,dict):
-            raise InvalidUsage("There is no model_json in sent model",status_code=400)
-        new_model.name = body.get("name","")
+        if not isinstance(b, dict):
+            raise InvalidUsage("There is no model_json in sent model", status_code=400)
+        new_model.name = body.get("name", "")
         ModelValidator.validate_model(new_model)
         new_model.save()
         return jsonify(new_model.to_dict())
@@ -44,4 +44,3 @@ class ModelController:
     def get_models():
         models = NNModel.select()
         return jsonify([model.to_dict() for model in models])
-

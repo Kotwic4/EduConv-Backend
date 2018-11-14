@@ -21,8 +21,8 @@ class DatasetController:
         dataset_class = check_if_dataset_class_exists(dataset.name)  # TODO: change a way of getting dataset classes
         file_path = dataset_class.get_bitmap_directory(train_set)+str(image_no)+".bmp"
         if not isfile(file_path):
-            raise InvalidUsage("Bitmap not found",404)
-        return send_file(file_path,mimetype='image/bmp')
+            raise InvalidUsage("Bitmap not found", 404)
+        return send_file(file_path, mimetype='image/bmp')
 
     @staticmethod
     def get_label(dataset_id, image_no, train_set=False):
