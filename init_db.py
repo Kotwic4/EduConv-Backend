@@ -41,33 +41,38 @@ def add_dataset(datasetInput):
 
 def recreate_images_and_labels(dataset_class, shape_of_image, image_type, dataset_id):
     dataset = dataset_class()
-    data = dataset.x_train
+    labels = dataset.get_labels()
+    labels_ids = {}
+    for label in labels:
+        new_label = Labels()
+        new_label.label = label
+        new_label.dataset = dataset_id
+        new_label.save()
+        labels_ids[label] = new_label.id
+    data = dataset.get_x_train()
     print(f'adding {dataset.name} train bitmaps')
-    add_bitmaps(data, dataset.y_train, shape_of_image, image_type,dataset.get_labels(), dataset_id)
-    data = dataset.x_test
+    add_bitmaps(data, dataset.get_y_train(), shape_of_image, image_type, dataset.get_labels(), dataset_id)
+    data = dataset.get_x_test()
     print(f'adding {dataset.name} test bitmaps')
-    add_bitmaps(data, dataset.y_test, shape_of_image, image_type,dataset.get_labels(), dataset_id)
+    add_bitmaps(data, dataset.get_y_test(), shape_of_image, image_type, dataset.get_labels(), dataset_id)
 
 
 def add_bitmaps(data_x, data_y, shape_of_image, image_type, labels, dataset_id):
+    labels_avaiable = Labels.select().where(Labels.dataset == dataset_id)
+    labels_to_label_ids = {}
+    for label in labels_avaiable:
+        labels_to_label_ids[label.label] = label.id
     labels_array = [str(labels[label.tolist().index(max(label))]) for label in data_y]
-    labels_ids = {}
-    for label in labels:
-        l = Labels()
-        l.label = label
-        l.dataset = dataset_id
-        l.save()
-        labels_ids[label]=l.id
-    image_array = data_x.reshape([data_x.shape[0]]+shape_of_image)
-    images=[]
+    image_array = data_x.reshape([data_x.shape[0]] + shape_of_image)
+    images = []
     for index, image in enumerate(image_array):
         img = Image.fromarray((image * 255).astype('uint8'), image_type)
-        buffer=BytesIO()
+        buffer = BytesIO()
         img.save(buffer, format='bmp')
         iii = buffer.getvalue()
-        images.append((iii,labels_ids[labels_array[index]], dataset_id, index))
+        images.append((iii, labels_to_label_ids[labels_array[index]], dataset_id, index))
         buffer.close()
-    Images.insert_many(images,fields=[Images.image,Images.label,Images.dataset, Images.image_no]).execute()
+    Images.insert_many(images, fields=[Images.image, Images.label, Images.dataset, Images.image_no]).execute()
 
 
 if __name__ == "__main__":

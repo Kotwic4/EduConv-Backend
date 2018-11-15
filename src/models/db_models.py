@@ -50,7 +50,7 @@ class Dataset(BaseModel):
             "img_width": self.img_width,
             "img_height": self.img_height,
             "img_depth": self.img_depth,
-            "labels": [label.label for label in Labels.select(Labels.label).where(Labels.id == self.id)]
+            "labels": [label.label for label in Labels.select(Labels.label).where(Labels.dataset == self.id)]
         }
 
     class Meta:
