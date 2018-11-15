@@ -1,8 +1,9 @@
 from flask import send_file, jsonify
 
+from io import BytesIO
 from src.datasets.datasets_map import check_if_dataset_class_exists
 from src.exceptions.invalid_usage import InvalidUsage
-from src.models.db_models import Dataset
+from src.models.db_models import Dataset, Images
 from os.path import isfile
 
 
@@ -17,12 +18,12 @@ class DatasetController:
 
     @staticmethod
     def get_bitmap(dataset_id, image_no, train_set=False):
-        dataset = DatasetController._get_dataset(dataset_id)
-        dataset_class = check_if_dataset_class_exists(dataset.name)  # TODO: change a way of getting dataset classes
-        file_path = dataset_class.get_bitmap_directory(train_set)+str(image_no)+".bmp"
-        if not isfile(file_path):
-            raise InvalidUsage("Bitmap not found", 404)
-        return send_file(file_path, mimetype='image/bmp')
+        buffer = BytesIO()
+        img = Images.get_or_none().image
+        with open('aaa.bmp','wb+') as aaa:
+            aaa.write(img)
+        buffer.write(img)
+        return send_file(buffer, mimetype='image/jpg')  # , attachment_filename='1.bmp', as_attachment=True
 
     @staticmethod
     def get_label(dataset_id, image_no, train_set=False):

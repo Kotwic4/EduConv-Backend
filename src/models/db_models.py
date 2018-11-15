@@ -157,8 +157,31 @@ class ModelsQueue(BaseModel):
     model_to_be_trained = ForeignKeyField(column_name='trained_model_id',
                                           field='id',
                                           model=NNTrainedModel,
-                                          unique=True,
                                           null=False)
 
     class Meta:
         table_name = 'models_queue'
+
+class Labels(BaseModel):
+    dataset = ForeignKeyField(column_name='dataset_id',
+                                          field='id',
+                                          model=Dataset,
+                                          null=False)
+    label = TextField(column_name='label',
+                        null=False)
+    class Meta:
+        table_name = 'labels'
+    
+class Images(BaseModel):
+    dataset = ForeignKeyField(column_name='dataset_id',
+                                          field='id',
+                                          model=Dataset,
+                                          null=False)
+    label = ForeignKeyField(column_name='label_id',
+                                          field='id',
+                                          model=Labels,
+                                          null=False)
+    image = BlobField(null=False)
+
+    class Meta:
+        table_name = 'images'

@@ -3,14 +3,14 @@ import os
 import sqlite3
 from os import path
 import argparse
-
+from io import BytesIO
 import keras
 import peewee
 from PIL import Image
 
 from src.datasets.cifar10 import Cifar10Input
 from src.datasets.mnist import MnistInput
-from src.models.db_models import Dataset, NNTrainedModel, NNModel, ModelsQueue, ModelEpochData
+from src.models.db_models import Dataset, NNTrainedModel, NNModel, ModelsQueue, ModelEpochData, Labels, Images
 
 
 def ensure_directory(directory):
@@ -22,7 +22,7 @@ def init_database():
     if not os.path.exists('db'):
         os.makedirs('db')
     database = peewee.SqliteDatabase('db/db.sqlite', **{})
-    database.create_tables([NNTrainedModel, Dataset, NNModel, ModelsQueue, ModelEpochData])
+    database.create_tables([NNTrainedModel, Dataset, NNModel, ModelsQueue, ModelEpochData, Labels, Images])
     database.close()
 
 
@@ -58,9 +58,20 @@ def recreate_images_and_labels(dataset_class, shape_of_image, image_type):
 
 def add_bitmaps(data, dataset_path, shape_of_image, image_type):
     image_array = data.reshape([data.shape[0]]+shape_of_image)
+    images=[]
     for index, image in enumerate(image_array):
-        with open(str.format(path.join(dataset_path, "{}.bmp"), index), "wb+") as f:
-            img = Image.fromarray((image * 255).astype('uint8'), image_type).save(f, 'bmp')
+        if(index%1000==0):
+            print(index)
+        #with open(str.format(path.join(dataset_path, "{}.bmp"), index), "wb+") as f:
+        img = Image.fromarray((image * 255).astype('uint8'), image_type)#.save(f, 'bmp')
+        buffer=BytesIO()
+        img.save(buffer, format='bmp')
+        iii = buffer.getvalue()
+        images.append((iii,1, 1))
+        buffer.close()
+    print('s1')
+    Images.insert_many(images,fields=[Images.image,Images.label,Images.dataset]).execute()
+    print('s2')
 
 
 def add_labels(data, labels, dataset_path):
