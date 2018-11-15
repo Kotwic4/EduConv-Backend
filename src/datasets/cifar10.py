@@ -73,8 +73,6 @@ class Cifar10Input:
             tar = tarfile.open(file_tmp)
             tar.extractall(path)
             tar.close()
-        path = path + PATH_EXTENSION
-        c = Cifar10Input()
 
     # IDatasetInput implementation:
     def get_x_train(self):
