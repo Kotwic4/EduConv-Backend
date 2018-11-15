@@ -1,9 +1,9 @@
 from flask import send_file, jsonify
-
+import json
 from io import BytesIO
 from src.datasets.datasets_map import check_if_dataset_class_exists
 from src.exceptions.invalid_usage import InvalidUsage
-from src.models.db_models import Dataset, Images
+from src.models.db_models import Dataset, Images, Labels
 from os.path import isfile
 
 
@@ -18,19 +18,22 @@ class DatasetController:
 
     @staticmethod
     def get_bitmap(dataset_id, image_no, train_set=False):
-        buffer = BytesIO()
-        img = Images.get_or_none().image
-        with open('aaa.bmp','wb+') as aaa:
-            aaa.write(img)
-        buffer.write(img)
-        return send_file(buffer, mimetype='image/jpg')  # , attachment_filename='1.bmp', as_attachment=True
+        img = Images.get_or_none((Images.image_no == image_no) & (Images.dataset == dataset_id))
+        print(img.id, image_no, dataset_id, img.image_no, img.dataset_id)
+        buffer = BytesIO(img.image)
+        return send_file(buffer, mimetype='image/bmp')
 
     @staticmethod
     def get_label(dataset_id, image_no, train_set=False):
         dataset = DatasetController._get_dataset(dataset_id)
-        dataset_class = check_if_dataset_class_exists(dataset.name)  # TODO: change a way of getting dataset classes
+        label = Labels.select().join(Images).where((Images.dataset == dataset_id) & (Images.image_no == image_no)).get().label
+        return str.format("{{\"label\":\"{}\"}}", label)
 
-        return str.format("{{\"label\":\"{}\"}}", dataset_class.get_label(image_no, train_set))
+    @staticmethod
+    def get_labels(dataset_id, image_numbers, train_set=False):
+        dataset = DatasetController._get_dataset(dataset_id)
+        labels = Labels.select().join(Images).where((Images.dataset == dataset_id) & (Images.image_no.in_(image_numbers)))
+        return json.dumps({"labels": [label.label for label in labels]})
 
     @staticmethod
     def get_datasets():

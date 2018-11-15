@@ -7,7 +7,7 @@ import tensorflowjs as tfjs
 from keras.callbacks import Callback
 from keras.models import Sequential
 
-from src.models.db_models import ModelEpochData
+from src.models.db_models import ModelEpochData, Labels
 
 
 class ProgressCallback(Callback):
@@ -42,11 +42,11 @@ class KerasModelBuilder:
                            optimizer=keras.optimizers.Adadelta(),
                            metrics=['accuracy'])
         self.set_epoch_data()
-        self.model.fit(self.dataset.x_train, self.dataset.y_train,
+        self.model.fit(self.dataset.get_x_train(), self.dataset.get_y_train(),
                        batch_size=self.batch_size,
                        epochs=self.epochs,
                        verbose=1,
-                       validation_data=(self.dataset.x_test, self.dataset.y_test),
+                       validation_data=(self.dataset.get_x_test(), self.dataset.get_y_test()),
                        callbacks=[ProgressCallback(db_model=self.db_model)])
         tfjs.converters.save_keras_model(self.model, path)
         keras.backend.clear_session()
@@ -57,7 +57,7 @@ class KerasModelBuilder:
         data['layers'][0]['args']['input_shape'] = [dataset.img_width, dataset.img_height, dataset.img_depth]
         for layer in reversed(data['layers']):
             if layer['layer_name'] == 'Dense':
-                layer['args']['units'] = len(json.loads(dataset.labels))
+                layer['args']['units'] = len(Labels.select().where(Labels.dataset == dataset.id))
                 break
         return data
 
@@ -81,5 +81,5 @@ class KerasModelBuilder:
         self.db_model.save()
 
         ModelEpochData.delete().where(ModelEpochData.model == self.db_model).execute()
-        score = self.model.evaluate(self.dataset.x_test, self.dataset.y_test, verbose=0)
+        score = self.model.evaluate(self.dataset.get_x_test(), self.dataset.get_y_test(), verbose=0)
         ModelEpochData.create(model=self.db_model, epoch_number=0, acc=score[1], loss=score[0])

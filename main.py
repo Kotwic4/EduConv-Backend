@@ -78,6 +78,13 @@ def get_label(dataset_id, image_no):
     is_train_dataset = dataset == "train"
     return DatasetController.get_label(dataset_id, image_no, is_train_dataset)
 
+@app.route('/data/<dataset_id>/label')
+def get_labels(dataset_id):
+    dataset = request.args['imageset']
+    image_numbers=[int(s) for s in request.args['image_no'].split(',')]
+    is_train_dataset = dataset == "train"
+    return DatasetController.get_labels(dataset_id, image_numbers, is_train_dataset)
+
 
 @app.route('/data/<int:dataset_id>/')
 def get_dataset_info(dataset_id):

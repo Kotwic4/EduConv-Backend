@@ -32,22 +32,21 @@ class TrainedModelController:
 
     @staticmethod
     def train_trained_model(body):
-        if body is None:
-            raise InvalidUsage("Empty body", 400)
-        if "dataset" not in body:
-            raise InvalidUsage("No dataset specified in request", 400)
+        if not isinstance(body, dict):
+            raise InvalidUsage("Incorrect JSON", 400)
+        if "dataset" not in body.keys():
+            raise InvalidUsage("No dataset specified in request")
         try:
             model_id = body["model_id"]
             dataset_name = body["dataset"]
             name = body.get("name")  # None if not found in json
             params = body["params"]
-
         except:
-            raise InvalidUsage('At least one of param is missing in given json (from [model_id, dataset, params])', status_code=400)
+            raise InvalidUsage("JSON is missing one of params: model_id, dataset, params", 400)
 
         model = NNModel.get_or_none(NNModel.id == model_id)
         if model is None:
-            raise InvalidUsage("model with given model id doesn't exist in database", 404)
+            raise InvalidUsage("Model not found", 404)
         dataset = Dataset.select().where(Dataset.name == dataset_name).get()
         check_if_dataset_class_exists(dataset_name)
 
