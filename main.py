@@ -53,6 +53,7 @@ def train_trained_model():
 def get_trained_model_info(trained_model_no):
     return TrainedModelController.get_trained_model_info(trained_model_no)
 
+
 @cross_origin()
 @app.route('/trained_model/<int:trained_model_no>/file/<filename>', methods=['GET'])
 def get_trained_trained_model(trained_model_no, filename):
@@ -77,6 +78,14 @@ def get_label(dataset_id, image_no):
     dataset = request.args['imageset']
     is_train_dataset = dataset == "train"
     return DatasetController.get_label(dataset_id, image_no, is_train_dataset)
+
+
+@app.route('/data/<dataset_id>/label')
+def get_labels(dataset_id):
+    dataset = request.args['imageset']
+    image_numbers = [int(s) for s in request.args['image_no'].split(',')]
+    is_train_dataset = dataset == "train"
+    return DatasetController.get_labels(dataset_id, image_numbers, is_train_dataset)
 
 
 @app.route('/data/<int:dataset_id>/')

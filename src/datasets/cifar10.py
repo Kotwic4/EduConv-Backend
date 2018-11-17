@@ -24,6 +24,7 @@ def unpickle(file):
 
 class Cifar10Input:
     def __init__(self, path=None):
+        self.acquire(path)
         self.name = 'Cifar-10'
         if path is not None:
             self.path = path
@@ -61,8 +62,7 @@ class Cifar10Input:
         self.train_labels = labels
         self.test_labels = test_labels
 
-    @staticmethod
-    def acquire(db, path=None):
+    def acquire(self, path=None):
         url = 'https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz'
         if path is not None:
             path = path
@@ -73,54 +73,36 @@ class Cifar10Input:
             tar = tarfile.open(file_tmp)
             tar.extractall(path)
             tar.close()
-        path = path + PATH_EXTENSION
-        if db.cursor().execute('SELECT * FROM datasets WHERE name=?', ('cifar-10',)).fetchone() is None:
-            db.cursor().execute('INSERT INTO datasets'
-                                '(name,train_images_count,test_images_count,img_width,img_height,img_depth,labels) '
-                                'VALUES (?,?,?,?,?,?,?)',
-                                ["cifar-10", 50000, 10000, 32, 32, 3,
-                                 str(json.dumps(Cifar10Input.get_labels(path)))])
-            db.commit()
-        c = Cifar10Input()
 
-    @staticmethod
-    def save_images(image_set, labels_set, bitmap_directory):
-        labels = Cifar10Input.get_labels()
-        ensure_directory(bitmap_directory)
-        for i, img_array in enumerate(image_set):
-            img_path = os.path.join(bitmap_directory, str(i) + ".bmp")
-            img = Image.fromarray((img_array * 255).astype('uint8'))
-            img.save(img_path, 'bmp')
-        with open(os.path.join(bitmap_directory, "labels.txt"), "w+") as labels_file:
-            labels_file.writelines([labels[i] + " " for i in labels_set])
+    # IDatasetInput implementation:
+    def get_x_train(self):
+        return self.x_train
 
-    @staticmethod
-    def get_labels(path=None):
-        if path is not None:
-            path = path
-        else:
-            path = DEFAULT_PATH
+    def get_x_test(self):
+        return self.x_test
+
+    def get_y_train(self):
+        return self.y_train
+
+    def get_y_test(self):
+        return self.y_test
+
+    def get_labels(self):
+        path = DEFAULT_PATH
         meta_data = unpickle(path + "batches.meta")
         return [label.decode() for label in meta_data[b'label_names']]
 
-    @staticmethod
-    def get_bitmap_directory(train_dataset=False):
-        if train_dataset:
-            return "db/datasets/Cifar-10/train/"
-        return "db/datasets/Cifar-10/test/"
+    def get_name(self):
+        return self.name
 
-    @staticmethod
-    def get_label(image_no, train_dataset=False):
-        bitmap_path = Cifar10Input.get_bitmap_directory(train_dataset)
-        bitmap_path = path.join(bitmap_path, "labels.txt")
-        with open(bitmap_path, "r") as f:
-            line = f.readline()
-            labels = line.split(' ')
-            if image_no >= len(labels):
-                raise InvalidUsage("Label not found", 404)
-            return labels[image_no]
+    def get_num_classes(self):
+        return self.num_classes
 
+    def get_img_depth(self):
+        return 3
 
-def ensure_directory(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    def get_img_width(self):
+        return 32
+
+    def get_img_height(self):
+        return 32

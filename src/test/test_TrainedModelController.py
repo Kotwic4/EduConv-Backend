@@ -32,38 +32,40 @@ class TestTrainedModelController(unittest.TestCase):
         assert response.status_code == 400
 
     def test_put_train_model_no_params(self):
-        response = self.client.post("/trained_model", json="""{
-        "model_id": 1,
-        "dataset": "Mnist",
-        "name": "trained_model name"
-        }""")
+        response = self.client.post("/trained_model",
+                                    json={
+                                        "model_id": 1,
+                                        "dataset": "Mnist",
+                                        "name": "trained_model name"
+                                    })
         assert response.status_code == 400
 
     def test_put_train_model_no_model_id(self):
-        response = self.client.post("/trained_model", json="""{
-        "dataset": "dataset_name",
-        "name": "trained_model name",
-        "params":
-        {
-            "epochs": epochs_number,
-            "batch_size": batch_size_number
-        }
-        }""")
+        response = self.client.post("/trained_model",
+                                    json={
+                                        "dataset": "dataset_name",
+                                        "name": "trained_model name",
+                                        "params":
+                                        {
+                                            "epochs": 1,
+                                            "batch_size": 1
+                                        }
+                                    })
         assert response.status_code == 400
 
     def test_put_train_model_non_existing_model_id(self):
-        json = """{
+        json = {
             "model_id": 999999,
             "dataset": "mnist",
             "name": "trained_model name",
             "params":
             {
-            "epochs": 1,
-            "batch_size": 1
+                "epochs": 1,
+                "batch_size": 1
             }
-        }"""
+        }
         response = self.client.post("/trained_model", json=json)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 404)
 
     def test_put_train_model_OK(self):
         self.models[0].save()

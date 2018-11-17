@@ -36,22 +36,33 @@ class MnistInput:
         self.y_train = keras.utils.to_categorical(self.y_train, self.num_classes)
         self.y_test = keras.utils.to_categorical(self.y_test, self.num_classes)
 
-    @staticmethod
-    def get_bitmap_directory(train_dataset=False):
-        if train_dataset:
-            return "db/datasets/mnist/train/"
-        return "db/datasets/mnist/test/"
+    # IDatasetInput implementation:
+    def get_x_train(self):
+        return self.x_train
 
-    @staticmethod
-    def get_label(image_no, train_dataset=False):
-        bitmap_path = MnistInput.get_bitmap_directory(train_dataset)
-        bitmap_path = path.join(bitmap_path, "labels.txt")
-        with open(bitmap_path, "r") as f:
-            labels = f.readline().split(' ')
-            if image_no >= len(labels):
-                raise InvalidUsage("Label not found", 404)
-            return labels[image_no]
+    def get_x_test(self):
+        return self.x_test
 
-    @staticmethod
-    def get_labels():
-        return [str(i) for i in range(10)]
+    def get_y_train(self):
+        return self.y_train
+
+    def get_y_test(self):
+        return self.y_test
+
+    def get_labels(self):
+        return [f"{i}" for i in range(10)]
+
+    def get_name(self):
+        return self.name
+
+    def get_num_classes(self):
+        return self.num_classes
+
+    def get_img_depth(self):
+        return 1
+
+    def get_img_width(self):
+        return 28
+
+    def get_img_height(self):
+        return 28

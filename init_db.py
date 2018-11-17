@@ -3,14 +3,14 @@ import os
 import sqlite3
 from os import path
 import argparse
-
+from io import BytesIO
 import keras
 import peewee
 from PIL import Image
 
 from src.datasets.cifar10 import Cifar10Input
 from src.datasets.mnist import MnistInput
-from src.models.db_models import Dataset, NNTrainedModel, NNModel, ModelsQueue, ModelEpochData
+from src.models.db_models import Dataset, NNTrainedModel, NNModel, ModelsQueue, ModelEpochData, Labels, Images
 
 
 def ensure_directory(directory):
@@ -22,57 +22,59 @@ def init_database():
     if not os.path.exists('db'):
         os.makedirs('db')
     database = peewee.SqliteDatabase('db/db.sqlite', **{})
-    database.create_tables([NNTrainedModel, Dataset, NNModel, ModelsQueue, ModelEpochData])
+    database.create_tables([NNTrainedModel, Dataset, NNModel, ModelsQueue, ModelEpochData, Labels, Images])
     database.close()
 
 
-def add_mnist():
-    print('adding mnist')
-    ensure_directory("db/datasets/mnist/train")
-    ensure_directory("db/datasets/mnist/test")
-    mnist = Dataset()
-    mnist.img_depth = 1
-    mnist.img_height = 28
-    mnist.img_width = 28
-    mnist.labels = json.dumps(list(str(i) for i in range(10)))
-    mnist.name = "mnist"
-    mnist.train_images_count = 60000
-    mnist.test_images_count = 10000
-    mnist.save()
+def add_dataset(datasetInput):
+    dataset = Dataset()
+    dataset.img_depth = datasetInput.get_img_depth()
+    dataset.img_height = datasetInput.get_img_width()
+    dataset.img_width = datasetInput.get_img_width()
+    dataset.labels = datasetInput.get_labels()
+    dataset.name = datasetInput.get_name()
+    dataset.train_images_count = datasetInput.get_x_train().shape[0]
+    dataset.test_images_count = datasetInput.get_x_test().shape[0]
+    dataset.save()
+    return dataset.id
 
 
-def recreate_images_and_labels(dataset_class, shape_of_image, image_type):
+def recreate_images_and_labels(dataset_class, shape_of_image, image_type, dataset_id):
     dataset = dataset_class()
-    ensure_directory(f"db/datasets/{dataset.name}/train/")
-    ensure_directory(f"db/datasets/{dataset.name}/test/")
-    print(f'adding {dataset.name} labels')
-    add_labels(dataset.y_train, dataset_class.get_labels(), f"db/datasets/{dataset.name}/train/")
-    add_labels(dataset.y_test, dataset_class.get_labels(), f"db/datasets/{dataset.name}/test/")
-    data = dataset.x_train
+    labels = dataset.get_labels()
+    labels_ids = {}
+    for label in labels:
+        new_label = Labels()
+        new_label.label = label
+        new_label.dataset = dataset_id
+        new_label.save()
+        labels_ids[label] = new_label.id
+    data = dataset.get_x_train()
     print(f'adding {dataset.name} train bitmaps')
-    add_bitmaps(data, f"db/datasets/{dataset.name}/train/", shape_of_image, image_type)
-    data = dataset.x_test
+    add_bitmaps(data, dataset.get_y_train(), shape_of_image, image_type, dataset.get_labels(), dataset_id, True)
+    data = dataset.get_x_test()
     print(f'adding {dataset.name} test bitmaps')
-    add_bitmaps(data, f"db/datasets/{dataset.name}/test/", shape_of_image, image_type)
+    add_bitmaps(data, dataset.get_y_test(), shape_of_image, image_type, dataset.get_labels(), dataset_id, False)
 
 
-def add_bitmaps(data, dataset_path, shape_of_image, image_type):
-    image_array = data.reshape([data.shape[0]]+shape_of_image)
+def add_bitmaps(data_x, data_y, shape_of_image, image_type, labels, dataset_id, train_set=False):
+    labels_avaiable = Labels.select().where(Labels.dataset == dataset_id)
+    labels_to_label_ids = {}
+    for label in labels_avaiable:
+        labels_to_label_ids[label.label] = label.id
+    labels_array = [str(labels[label.tolist().index(max(label))]) for label in data_y]
+    image_array = data_x.reshape([data_x.shape[0]] + shape_of_image)
+    images = []
     for index, image in enumerate(image_array):
-        with open(str.format(path.join(dataset_path, "{}.bmp"), index), "wb+") as f:
-            img = Image.fromarray((image * 255).astype('uint8'), image_type).save(f, 'bmp')
-
-
-def add_labels(data, labels, dataset_path):
-    with open(str.format(path.join(dataset_path, "labels.txt")), "w+") as f:
-        f.write(" ".join([str(labels[label.tolist().index(max(label))]) for label in data]))
-
-
-def add_cifar():
-    print('adding cifar')
-    db = sqlite3.connect("db/db.sqlite")
-    Cifar10Input.acquire(db)
-    db.close()
+        img = Image.fromarray((image * 255).astype('uint8'), image_type)
+        buffer = BytesIO()
+        img.save(buffer, format='bmp')
+        iii = buffer.getvalue()
+        images.append((iii, labels_to_label_ids[labels_array[index]], dataset_id, index, train_set))
+        buffer.close()
+        if(index % 10000 == 0 or index == len(image_array) - 1):
+            Images.insert_many(images, fields=[Images.image, Images.label, Images.dataset, Images.image_no, Images.is_train]).execute()
+            images=[]
 
 
 if __name__ == "__main__":
@@ -88,10 +90,10 @@ if __name__ == "__main__":
     if args.db:
         init_database()
     if args.mnist:
-        add_mnist()
+        id = add_dataset(MnistInput())
         if args.images:
-            recreate_images_and_labels(MnistInput, [28, 28], 'L')
+            recreate_images_and_labels(MnistInput, [28, 28], 'L', id)
     if args.cifar10:
-        add_cifar()
+        id = add_dataset(Cifar10Input())
         if args.images:
-            recreate_images_and_labels(Cifar10Input, [32, 32, 3], 'RGB')
+            recreate_images_and_labels(Cifar10Input, [32, 32, 3], 'RGB', id)

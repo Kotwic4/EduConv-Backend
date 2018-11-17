@@ -1,8 +1,9 @@
 from flask import send_file, jsonify
-
+import json
+from io import BytesIO
 from src.datasets.datasets_map import check_if_dataset_class_exists
 from src.exceptions.invalid_usage import InvalidUsage
-from src.models.db_models import Dataset
+from src.models.db_models import Dataset, Images, Labels
 from os.path import isfile
 
 
@@ -17,19 +18,23 @@ class DatasetController:
 
     @staticmethod
     def get_bitmap(dataset_id, image_no, train_set=False):
-        dataset = DatasetController._get_dataset(dataset_id)
-        dataset_class = check_if_dataset_class_exists(dataset.name)  # TODO: change a way of getting dataset classes
-        file_path = dataset_class.get_bitmap_directory(train_set)+str(image_no)+".bmp"
-        if not isfile(file_path):
-            raise InvalidUsage("Bitmap not found", 404)
-        return send_file(file_path, mimetype='image/bmp')
+        img = Images.get_or_none((Images.image_no == image_no) & (Images.dataset == dataset_id))
+        buffer = BytesIO(img.image)
+        return send_file(buffer, mimetype='image/bmp')
 
     @staticmethod
     def get_label(dataset_id, image_no, train_set=False):
         dataset = DatasetController._get_dataset(dataset_id)
-        dataset_class = check_if_dataset_class_exists(dataset.name)  # TODO: change a way of getting dataset classes
+        label = Labels.select().join(Images).where((Images.dataset == dataset_id) & (Images.image_no == image_no) & (Images.is_train == train_set)).get().label
+        return str.format("{{\"label\":\"{}\"}}", label)
 
-        return str.format("{{\"label\":\"{}\"}}", dataset_class.get_label(image_no, train_set))
+    @staticmethod
+    def get_labels(dataset_id, image_numbers, train_set=False):
+        dataset = DatasetController._get_dataset(dataset_id)
+        labels = Labels.select(Labels.label, Images.image_no).join(Images).where((Images.dataset == dataset_id)
+               & (Images.image_no.in_(image_numbers)
+               & (Images.is_train == train_set))).dicts()
+        return json.dumps({"labels": [l for l in labels]})
 
     @staticmethod
     def get_datasets():
