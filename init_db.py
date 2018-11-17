@@ -51,13 +51,13 @@ def recreate_images_and_labels(dataset_class, shape_of_image, image_type, datase
         labels_ids[label] = new_label.id
     data = dataset.get_x_train()
     print(f'adding {dataset.name} train bitmaps')
-    add_bitmaps(data, dataset.get_y_train(), shape_of_image, image_type, dataset.get_labels(), dataset_id)
+    add_bitmaps(data, dataset.get_y_train(), shape_of_image, image_type, dataset.get_labels(), dataset_id, True)
     data = dataset.get_x_test()
     print(f'adding {dataset.name} test bitmaps')
-    add_bitmaps(data, dataset.get_y_test(), shape_of_image, image_type, dataset.get_labels(), dataset_id)
+    add_bitmaps(data, dataset.get_y_test(), shape_of_image, image_type, dataset.get_labels(), dataset_id, False)
 
 
-def add_bitmaps(data_x, data_y, shape_of_image, image_type, labels, dataset_id):
+def add_bitmaps(data_x, data_y, shape_of_image, image_type, labels, dataset_id, train_set=False):
     labels_avaiable = Labels.select().where(Labels.dataset == dataset_id)
     labels_to_label_ids = {}
     for label in labels_avaiable:
@@ -70,9 +70,11 @@ def add_bitmaps(data_x, data_y, shape_of_image, image_type, labels, dataset_id):
         buffer = BytesIO()
         img.save(buffer, format='bmp')
         iii = buffer.getvalue()
-        images.append((iii, labels_to_label_ids[labels_array[index]], dataset_id, index))
+        images.append((iii, labels_to_label_ids[labels_array[index]], dataset_id, index, train_set))
         buffer.close()
-    Images.insert_many(images, fields=[Images.image, Images.label, Images.dataset, Images.image_no]).execute()
+        if(index % 10000 == 0 or index == len(image_array) - 1):
+            Images.insert_many(images, fields=[Images.image, Images.label, Images.dataset, Images.image_no, Images.is_train]).execute()
+            images=[]
 
 
 if __name__ == "__main__":

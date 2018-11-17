@@ -185,6 +185,7 @@ class Images(BaseModel):
                             null=False)
     image = BlobField(null=False)
     image_no = IntegerField(null=False)
+    is_train = BooleanField(null=False)
 
     class Meta:
         table_name = 'images'

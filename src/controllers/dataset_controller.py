@@ -25,14 +25,16 @@ class DatasetController:
     @staticmethod
     def get_label(dataset_id, image_no, train_set=False):
         dataset = DatasetController._get_dataset(dataset_id)
-        label = Labels.select().join(Images).where((Images.dataset == dataset_id) & (Images.image_no == image_no)).get().label
+        label = Labels.select().join(Images).where((Images.dataset == dataset_id) & (Images.image_no == image_no) & (Images.is_train == train_set)).get().label
         return str.format("{{\"label\":\"{}\"}}", label)
 
     @staticmethod
     def get_labels(dataset_id, image_numbers, train_set=False):
         dataset = DatasetController._get_dataset(dataset_id)
-        labels = Labels.select().join(Images).where((Images.dataset == dataset_id) & (Images.image_no.in_(image_numbers)))
-        return json.dumps({"labels": [label.label for label in labels]})
+        labels = Labels.select(Labels.label, Images.image_no).join(Images).where((Images.dataset == dataset_id)
+               & (Images.image_no.in_(image_numbers)
+               & (Images.is_train == train_set))).dicts()
+        return json.dumps({"labels": [l for l in labels]})
 
     @staticmethod
     def get_datasets():
