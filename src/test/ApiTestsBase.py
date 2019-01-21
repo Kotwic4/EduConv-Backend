@@ -19,7 +19,7 @@ class TestAPIBase():
         db_test.connect()
         db_test.create_tables(MODELS)
         d = Dataset()
-        d.name = "mnist"
+        d.name = "MNIST"
         d.img_depth = 1
         d.img_height = 28
         d.img_width = 28
@@ -40,7 +40,7 @@ class TestAPIBase():
         for i in range(1, 3):
             model = NNModel()
             model.name = f"name{i}"
-            model.model_json = f"""{{"model{str(i)}": "model{str(i)}", "dataset": "mnist",
+            model.model_json = f"""{{"model{str(i)}": "model{str(i)}", "dataset": "MNIST",
             "layers": [{{"layer_name": "Conv2D", "args": {{"filters": 32, "kernel_size": [3, 3], "activation": "relu"}}}},
             {{"layer_name": "Conv2D", "args": {{"filters": 64, "kernel_size": [3, 3], "activation": "relu"}}}},
             {{"layer_name": "MaxPooling2D", "args": {{"pool_size": [2, 2]}}}},

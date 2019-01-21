@@ -35,7 +35,7 @@ class TestTrainedModelController(unittest.TestCase):
         response = self.client.post("/trained_model",
                                     json={
                                         "model_id": 1,
-                                        "dataset": "Mnist",
+                                        "dataset": "MNIST",
                                         "name": "trained_model name"
                                     })
         assert response.status_code == 400
@@ -56,7 +56,7 @@ class TestTrainedModelController(unittest.TestCase):
     def test_put_train_model_non_existing_model_id(self):
         json = {
             "model_id": 999999,
-            "dataset": "mnist",
+            "dataset": "MNIST",
             "name": "trained_model name",
             "params":
             {
@@ -71,7 +71,7 @@ class TestTrainedModelController(unittest.TestCase):
         self.models[0].save()
         json = {
             "model_id": 1,
-            "dataset": "mnist",
+            "dataset": "MNIST",
             "name": "trained_model name",
             "params":
             {

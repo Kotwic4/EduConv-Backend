@@ -72,7 +72,7 @@ def add_bitmaps(data_x, data_y, shape_of_image, image_type, labels, dataset_id, 
         iii = buffer.getvalue()
         images.append((iii, labels_to_label_ids[labels_array[index]], dataset_id, index, train_set))
         buffer.close()
-        if(index % 10000 == 0 or index == len(image_array) - 1):
+        if(index % 125 == 0 or index == len(image_array) - 1):
             Images.insert_many(images, fields=[Images.image, Images.label, Images.dataset, Images.image_no, Images.is_train]).execute()
             images=[]
 

@@ -9,7 +9,7 @@ from src.exceptions.invalid_usage import InvalidUsage
 
 class MnistInput:
     def __init__(self):
-        self.name = 'mnist'
+        self.name = 'MNIST'
         self.batch_size = 128
         self.num_classes = 10
         # input image dimensions

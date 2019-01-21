@@ -11,7 +11,7 @@ from PIL import Image
 from keras.utils import np_utils
 from src.exceptions.invalid_usage import InvalidUsage
 
-DEFAULT_SHORT_PATH = "db/datasets/Cifar-10/"
+DEFAULT_SHORT_PATH = "db/datasets/CIFAR-10/"
 PATH_EXTENSION = "cifar-10-batches-py/"
 DEFAULT_PATH = DEFAULT_SHORT_PATH + PATH_EXTENSION
 
@@ -25,7 +25,7 @@ def unpickle(file):
 class Cifar10Input:
     def __init__(self, path=None):
         self.acquire(path)
-        self.name = 'Cifar-10'
+        self.name = 'CIFAR-10'
         if path is not None:
             self.path = path
         else:
