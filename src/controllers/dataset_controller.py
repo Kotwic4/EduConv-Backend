@@ -18,7 +18,7 @@ class DatasetController:
 
     @staticmethod
     def get_bitmap(dataset_id, image_no, train_set=False):
-        img = Images.get_or_none((Images.image_no == image_no) & (Images.dataset == dataset_id))
+        img = Images.get_or_none((Images.image_no == image_no) & (Images.dataset == dataset_id) & (Images.is_train == train_set))
         buffer = BytesIO(img.image)
         return send_file(buffer, mimetype='image/bmp')
 
